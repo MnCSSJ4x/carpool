@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:string_validator/string_validator.dart';
 
 Form LoginForm(email_id_controller, roll_num_controller, form_key) {
+  const String orgid = "iiitb.ac.in";
+
   return Form(
     key: form_key,
     child: (Center(
@@ -11,6 +14,18 @@ Form LoginForm(email_id_controller, roll_num_controller, form_key) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           TextFormField(
+            validator: (value) {
+              if (value != null) {
+                if (value.contains(orgid) && value.contains("@")) {
+                  return null;
+                }
+              }
+              if (value!.isEmpty) {
+                return 'Enter email please';
+              }
+
+              return 'Enter Valid organisation email id';
+            },
             controller: email_id_controller,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
@@ -22,6 +37,14 @@ Form LoginForm(email_id_controller, roll_num_controller, form_key) {
             height: 25,
           ),
           TextFormField(
+            validator: (value) {
+              if (value != null) {
+                if (isAlphanumeric(value)) {
+                  return null;
+                }
+              }
+              return 'Enter Valid rollnumber';
+            },
             controller: roll_num_controller,
             keyboardType: TextInputType.text,
             decoration: const InputDecoration(
@@ -33,7 +56,14 @@ Form LoginForm(email_id_controller, roll_num_controller, form_key) {
             height: 25,
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              if (form_key.currentState.validate()) {
+                //add backend
+                print("Validated");
+              } else {
+                print("not valid");
+              }
+            },
             child: const Text("Sign In"),
             style: ElevatedButton.styleFrom(
               primary: Colors.black,
