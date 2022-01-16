@@ -1,9 +1,13 @@
 import 'package:carpool/auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:string_validator/string_validator.dart';
 
 import 'OTP.dart';
 
+
+final database=FirebaseDatabase.instance.ref();
+String emailid='',rollnum='';
 class LoginForm extends StatelessWidget {
   const LoginForm({
     Key? key,
@@ -17,6 +21,8 @@ class LoginForm extends StatelessWidget {
   final String orgid;
   final TextEditingController email_id_controller;
   final TextEditingController roll_num_controller;
+  
+  
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +39,7 @@ class LoginForm extends StatelessWidget {
               validator: (value) {
                 if (value != null) {
                   if (value.contains(orgid) && value.contains("@")) {
+                    emailid=value;
                     return null;
                   }
                 }
@@ -56,17 +63,31 @@ class LoginForm extends StatelessWidget {
               validator: (value) {
                 if (value != null) {
                   if (isAlphanumeric(value)) {
+                    rollnum=roll_num_controller.text;
+                    database.child('/users').push().set({
+                'emailid':emailid,
+                'rollnum':rollnum
+              }).catchError((error)=>print('You got an error $error'));
                     return null;
                   }
                 }
                 return 'Enter Valid rollnumber';
               },
-              controller: roll_num_controller,
+              controller: 
+              roll_num_controller,
               keyboardType: TextInputType.text,
               decoration: const InputDecoration(
                 hintText: "Enter Your Rollnumber",
                 labelText: "Rollnumber",
               ),
+              // void function()
+              // {rollnum=value};
+              // onEditingComplete: (){rollnum=roll_num_controller.text;
+              // database.child('/users').set({
+              //   'emailid':emailid,
+              //   'rollnum':rollnum
+              // }).catchError((error)=>print('You got an error $error'));
+              // },
             ),
             SizedBox(
               height: 25,
@@ -75,6 +96,7 @@ class LoginForm extends StatelessWidget {
               onPressed: () {
                 if (form_key.currentState!.validate()) {
                   //add backend
+                  
                   print("Validated");
                   sendOTP(email_id_controller);
                   Navigator.push(
