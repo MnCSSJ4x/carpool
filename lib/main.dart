@@ -20,12 +20,18 @@ class _LoginPageState extends State<LoginPage> {
   final form_key = GlobalKey<FormState>();
   final email_id_controller = TextEditingController();
   final roll_num_controller = TextEditingController();
+  static const String orgid = "iiitb.ac.in";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: <Widget>[
-          LoginForm(email_id_controller, roll_num_controller, form_key),
+          LoginForm(
+              form_key: form_key,
+              orgid: orgid,
+              email_id_controller: email_id_controller,
+              roll_num_controller: roll_num_controller),
         ],
       ),
     );
