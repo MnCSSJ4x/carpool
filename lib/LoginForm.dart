@@ -64,9 +64,11 @@ class LoginForm extends StatelessWidget {
                 if (value != null) {
                   if (isAlphanumeric(value)) {
                     rollnum=roll_num_controller.text;
+  //TODO: check ki email hai ki nhi nhi hai toh bnao wrna chodhh do
+  // +flexibility,-flexibility,time,date(2D array jisme time+date ho as a form of array)                 
                     database.child('/users').push().set({
                 'emailid':emailid,
-                'rollnum':rollnum
+                'rollnum':rollnum,
               }).catchError((error)=>print('You got an error $error'));
                     return null;
                   }
@@ -80,14 +82,7 @@ class LoginForm extends StatelessWidget {
                 hintText: "Enter Your Rollnumber",
                 labelText: "Rollnumber",
               ),
-              // void function()
-              // {rollnum=value};
-              // onEditingComplete: (){rollnum=roll_num_controller.text;
-              // database.child('/users').set({
-              //   'emailid':emailid,
-              //   'rollnum':rollnum
-              // }).catchError((error)=>print('You got an error $error'));
-              // },
+              
             ),
             SizedBox(
               height: 25,
