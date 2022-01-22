@@ -1,18 +1,24 @@
+import 'package:carpool/landing.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'LoginForm.dart';
 
-Future <void> main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptions(apiKey: 'AIzaSyCfwoPfMpHN4Z1a8cyKwU0PcvgQmeAb1WE',
-     appId: "1:1007164354983:android:7fbeddace7d008117b4682", 
-     databaseURL: "https://sharecab-4e0f6-default-rtdb.firebaseio.com/",
-     messagingSenderId: "1007164354983",
-     projectId: "sharecab-4e0f6"),
+    options: FirebaseOptions(
+        apiKey: 'AIzaSyCfwoPfMpHN4Z1a8cyKwU0PcvgQmeAb1WE',
+        appId: "1:1007164354983:android:7fbeddace7d008117b4682",
+        databaseURL: "https://sharecab-4e0f6-default-rtdb.firebaseio.com/",
+        messagingSenderId: "1007164354983",
+        projectId: "sharecab-4e0f6"),
   );
+  // runApp(const MaterialApp(
+  //   home: LoginPage(),
+  //   debugShowCheckedModeBanner: false,
+  // ));
   runApp(const MaterialApp(
-    home: LoginPage(),
+    home: Landing(),
     debugShowCheckedModeBanner: false,
   ));
 }

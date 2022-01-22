@@ -31,7 +31,7 @@ class OTP extends StatelessWidget {
                     Center(
                         child: ElevatedButton(
                       onPressed: () {
-                        verifyOTP(emailidcontroller, _otpcontroller);
+                        verifyOTP(emailidcontroller, _otpcontroller, context);
                       },
                       child: const Text("Submit OTP"),
                       style: ElevatedButton.styleFrom(primary: Colors.black),
