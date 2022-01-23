@@ -13,14 +13,14 @@ Future<void> main() async {
         messagingSenderId: "1007164354983",
         projectId: "sharecab-4e0f6"),
   );
-  // runApp(const MaterialApp(
-  //   home: LoginPage(),
-  //   debugShowCheckedModeBanner: false,
-  // ));
   runApp(const MaterialApp(
-    home: Landing(),
+    home: LoginPage(),
     debugShowCheckedModeBanner: false,
   ));
+  // runApp(const MaterialApp(
+  //   home: Landing(),
+  //   debugShowCheckedModeBanner: false,
+  // ));
 }
 
 class LoginPage extends StatefulWidget {
@@ -40,6 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         children: <Widget>[
           LoginForm(

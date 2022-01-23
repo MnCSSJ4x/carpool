@@ -1,6 +1,8 @@
 import 'package:carpool/auth.dart';
+import 'package:carpool/user.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:string_validator/string_validator.dart';
 
 import 'OTP.dart';
@@ -26,36 +28,46 @@ class LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
+    return Scaffold(
       key: form_key,
-      child: (Center(
+      backgroundColor: Colors.black,
+      body: Center(
           child: Card(
-              child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextFormField(
-              validator: (value) {
-                if (value != null) {
-                  if (value.contains(orgid) && value.contains("@")) {
-                    emailid=value;
-                    return null;
-                  }
-                }
-                if (value!.isEmpty) {
-                  return 'Enter email please';
-                }
+              color: Colors.black87,
+              child:
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                Image.asset(
+                  'assets/logo.png',
+                  width: 200,
+                  height: 100,
+                ),
+                TextFormField(
+                  validator: (value) {
+                    if (value != null) {
+                      if (value.contains(orgid) && value.contains("@")) {
+                        emailid=value;
+                        return null;
+                      }
+                    }
+                    if (value!.isEmpty) {
+                      return 'Enter Email Please';
+                    }
 
-                return 'Enter Valid organisation email id';
-              },
-              controller: email_id_controller,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                hintText: "Enter Your Email",
-                labelText: "Email ID",
-              ),
-            ),
+                    return 'Enter Valid Organisation Email ID';
+                  },
+                  controller: email_id_controller,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    hintText: "Enter Your Email",
+                    labelText: "Email ID",
+                    filled: true,
+                    fillColor: Color(0xFF424242),
+                  ),
+                ),
             const SizedBox(
               height: 25,
             ),
@@ -66,21 +78,27 @@ class LoginForm extends StatelessWidget {
                     rollnum=roll_num_controller.text;
   //TODO: check ki email hai ki nhi nhi hai toh bnao wrna chodhh do
   // +flexibility,-flexibility,time,date(2D array jisme time+date ho as a form of array)                 
-                    database.child('/users').push().set({
-                'emailid':emailid,
-                'rollnum':rollnum,
-              }).catchError((error)=>print('You got an error $error'));
+            //         database.child('/users').push().set({
+            //     'emailid':emailid,
+            //     'rollnum':rollnum,
+            //   }).catchError((error)=>print('You got an error $error'));
+			User u=new User(emailid,rollnum);
+			u.addBooking("23/01/2022");
+			u.addUserToDatabase(emailid, rollnum);
+			print(u.getId());
                     return null;
                   }
                 }
-                return 'Enter Valid rollnumber';
+                return 'Enter Valid Roll Number';
               },
               controller: 
               roll_num_controller,
               keyboardType: TextInputType.text,
               decoration: const InputDecoration(
-                hintText: "Enter Your Rollnumber",
-                labelText: "Rollnumber",
+                hintText: "Enter Your Roll Number",
+                labelText: "Roll Number",
+                filled: true,
+                fillColor: Color(0xFF424242),
               ),
               
             ),
@@ -106,14 +124,14 @@ class LoginForm extends StatelessWidget {
               },
               child: const Text("Get OTP"),
               style: ElevatedButton.styleFrom(
-                primary: Colors.black,
+                primary: Colors.grey[800],
                 padding:
                     const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
               ),
             )
           ],
         ),
-      )))),
+      ))),
     );
   }
 }
