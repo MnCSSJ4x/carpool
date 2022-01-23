@@ -13,14 +13,14 @@ Future<void> main() async {
         messagingSenderId: "1007164354983",
         projectId: "sharecab-4e0f6"),
   );
-  // runApp(const MaterialApp(
-  //   home: LoginPage(),
-  //   debugShowCheckedModeBanner: false,
-  // ));
   runApp(const MaterialApp(
-    home: Landing(),
+    home: LoginPage(),
     debugShowCheckedModeBanner: false,
   ));
+  // runApp(const MaterialApp(
+  //   home: Landing(),
+  //   debugShowCheckedModeBanner: false,
+  // ));
 }
 
 class LoginPage extends StatefulWidget {

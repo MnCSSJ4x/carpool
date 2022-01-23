@@ -1,4 +1,5 @@
 import 'package:carpool/auth.dart';
+import 'package:carpool/user.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:string_validator/string_validator.dart';
@@ -66,10 +67,14 @@ class LoginForm extends StatelessWidget {
                     rollnum=roll_num_controller.text;
   //TODO: check ki email hai ki nhi nhi hai toh bnao wrna chodhh do
   // +flexibility,-flexibility,time,date(2D array jisme time+date ho as a form of array)                 
-                    database.child('/users').push().set({
-                'emailid':emailid,
-                'rollnum':rollnum,
-              }).catchError((error)=>print('You got an error $error'));
+            //         database.child('/users').push().set({
+            //     'emailid':emailid,
+            //     'rollnum':rollnum,
+            //   }).catchError((error)=>print('You got an error $error'));
+			User u=new User(emailid,rollnum);
+			u.addBooking("23/01/2022");
+			u.addUserToDatabase(emailid, rollnum);
+			print(u.getId());
                     return null;
                   }
                 }
