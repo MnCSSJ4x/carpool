@@ -28,10 +28,9 @@ class LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Form(
       key: form_key,
-      backgroundColor: Colors.black,
-      body: Center(
+      child: Center(
           child: Card(
               color: Colors.black87,
               child:
@@ -61,11 +60,15 @@ class LoginForm extends StatelessWidget {
                   },
                   controller: email_id_controller,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
+                    hintStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    labelStyle: const TextStyle(color: Colors.white),
                     hintText: "Enter Your Email",
                     labelText: "Email ID",
                     filled: true,
-                    fillColor: Color(0xFF424242),
+                    fillColor: const Color(0xFF424242),
+                    contentPadding: const EdgeInsets.all(18),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(7.0)),
                   ),
                 ),
             const SizedBox(
@@ -94,11 +97,15 @@ class LoginForm extends StatelessWidget {
               controller: 
               roll_num_controller,
               keyboardType: TextInputType.text,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
+                hintStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                labelStyle: const TextStyle(color: Colors.white),
                 hintText: "Enter Your Roll Number",
                 labelText: "Roll Number",
                 filled: true,
-                fillColor: Color(0xFF424242),
+                fillColor: const Color(0xFF424242),
+                contentPadding: const EdgeInsets.all(18),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(7.0)),
               ),
               
             ),
@@ -124,9 +131,10 @@ class LoginForm extends StatelessWidget {
               },
               child: const Text("Get OTP"),
               style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 primary: Colors.grey[800],
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
               ),
             )
           ],
