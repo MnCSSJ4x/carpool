@@ -6,6 +6,7 @@ class Landing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: const Color(0xFF191919),
         body: Column(
       children: [
         const SizedBox(
@@ -17,14 +18,14 @@ class Landing extends StatelessWidget {
             child: Text(
               'Welcome',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 80, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 40, fontFamily: 'Helvetica', color: Colors.white),
             )),
         const Padding(
             padding: EdgeInsets.all(12),
             child: Text(
               'How can we help you !',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 40),
+              style: TextStyle(fontSize: 24, fontFamily: 'Helvetica', color: Colors.white),
             )),
         const SizedBox(
           width: 20,
@@ -50,7 +51,7 @@ class Landing extends StatelessWidget {
         FloatingActionButton.extended(
           label: const Text('View Booked Slots'),
           onPressed: () {}, //goto slot booking
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.blue,
         ),
       ],
     ));
