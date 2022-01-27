@@ -42,7 +42,12 @@ class LoginForm extends StatelessWidget {
                 Image.asset(
                   'assets/logo.png',
                   width: 200,
-                  height: 100,
+                  height: 90,
+                ),
+                const Text(
+                  "ShareCab\n",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22, color: Colors.white),
                 ),
                 TextFormField(
                   validator: (value) {
@@ -60,6 +65,7 @@ class LoginForm extends StatelessWidget {
                   },
                   controller: email_id_controller,
                   keyboardType: TextInputType.emailAddress,
+                  style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                     labelStyle: const TextStyle(color: Colors.white),
@@ -67,7 +73,7 @@ class LoginForm extends StatelessWidget {
                     labelText: "Email ID",
                     filled: true,
                     fillColor: const Color(0xFF424242),
-                    contentPadding: const EdgeInsets.all(18),
+                    contentPadding: const EdgeInsets.all(15),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(7.0)),
                   ),
                 ),
@@ -97,14 +103,15 @@ class LoginForm extends StatelessWidget {
               controller: 
               roll_num_controller,
               keyboardType: TextInputType.text,
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                labelStyle: const TextStyle(color: Colors.white),
+                labelStyle: const TextStyle(color: Colors.white,),
                 hintText: "Enter Your Roll Number",
                 labelText: "Roll Number",
                 filled: true,
                 fillColor: const Color(0xFF424242),
-                contentPadding: const EdgeInsets.all(18),
+                contentPadding: const EdgeInsets.all(15),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(7.0)),
               ),
               
@@ -134,7 +141,7 @@ class LoginForm extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 primary: Colors.grey[800],
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
               ),
             )
           ],
