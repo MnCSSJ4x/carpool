@@ -8,13 +8,11 @@ final databaseReference=FirebaseDatabase.instance.ref();
 DatabaseReference saveData(User user)
 {
 	var id=databaseReference.child('/users').push();
-	id.set({
-		'emailid':user.emailId,
-		'rollnum':user.rollNumber,
-		'bookings': user.bookings.toList(),
-		'posFlexibility': user.posFlexibility,
-		'negFlexibility': user.negFlexibility,
-		
-	}).catchError((error)=>print('You got an error $error'));
+	id.set(user.toJson()).catchError((error)=>print('You got an error $error'));
 	return id;
+}
+
+void updateDatabase(User user,DatabaseReference id)
+{
+  id.update(user.toJson());
 }
