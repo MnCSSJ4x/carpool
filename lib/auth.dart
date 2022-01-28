@@ -16,7 +16,7 @@ Future<bool> verifyOTP(email_id_controller, otpcontroller, context) async {
   if (response) {
     print("Verified");
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const Landing()));
+        context, MaterialPageRoute(builder: (context) => const TabNavigator()));
     return true;
   } else {
     print("wrong");

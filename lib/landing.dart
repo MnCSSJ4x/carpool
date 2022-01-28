@@ -43,17 +43,6 @@ class Landing extends State<TabNavigator>{
             label: 'New Booking',
             backgroundColor: Colors.black,
           ),
-        //   BottomNavigationBarItem(
-        //     icon: IconButton(
-        //       onPressed: (){},
-        //       icon: const Icon(
-        //         Icons.person,
-        //         color: Colors.white,
-        //       ),
-        //     ),
-        //     label: 'Search',
-        //     backgroundColor: Colors.black,
-        //   ),
         ],
         type: BottomNavigationBarType.shifting,
         currentIndex: state,
