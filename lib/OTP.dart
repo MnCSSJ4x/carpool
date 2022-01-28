@@ -2,6 +2,7 @@ import 'package:carpool/auth.dart';
 import 'package:carpool/database.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // ignore: non_constant_identifier_names
 class OTP extends StatelessWidget {
@@ -14,7 +15,8 @@ class OTP extends StatelessWidget {
   final emailidcontroller;
   final rollnumbercontroller;
 
-  final database = DataBaseService();
+  // final database = DataBaseService();
+  //final CollectionReference userCollection=FirebaseFirestore.instance.collection('user');
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -61,6 +63,7 @@ class OTP extends StatelessWidget {
                         bool flag = await verifyOTP(
                             emailidcontroller, _otpcontroller, context);
                         if (flag) {
+                          
                           var db =
                               DataBaseService.databaseReference.child('/users');
                           // db.once().then((DataSnapshot snapshot) {
@@ -78,6 +81,7 @@ class OTP extends StatelessWidget {
                             'rollnum': rollnumbercontroller.text,
                           }).catchError(
                                   (error) => print('You got an error $error'));
+                          await DataBaseService(uid: 'riggmaY4QDKNw39GCuwC').updateUserData( emailidcontroller.text, rollnumbercontroller.text);
                         }
                       },
                       child: const Text(
