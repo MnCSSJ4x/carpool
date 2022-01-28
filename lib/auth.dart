@@ -10,14 +10,16 @@ void sendOTP(email_id_controller) async {
   }
 }
 
-void verifyOTP(email_id_controller, otpcontroller, context) async {
+Future<bool> verifyOTP(email_id_controller, otpcontroller, context) async {
   var response = EmailAuth.validate(
       receiverMail: email_id_controller.text, userOTP: otpcontroller.text);
   if (response) {
     print("Verified");
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const TabNavigator()));
+        context, MaterialPageRoute(builder: (context) => const Landing()));
+    return true;
   } else {
     print("wrong");
+    return false;
   }
 }
