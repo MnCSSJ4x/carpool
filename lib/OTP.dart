@@ -30,6 +30,7 @@ class OTP extends StatelessWidget {
                     ),
                     Center(
                         child: TextFormField(
+                          style: const TextStyle(color: Colors.white),
                       keyboardType: TextInputType.number,
                       controller: _otpcontroller,
                       decoration: InputDecoration(
