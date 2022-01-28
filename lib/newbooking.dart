@@ -35,7 +35,7 @@ class newBookings extends StatelessWidget {
             IconButton(
               icon: const Icon(
                 Icons.date_range,
-                color: Colors.white,
+                color: Colors.blue,
               ),
               onPressed: () {
                 _showCalendar(context);

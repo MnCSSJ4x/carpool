@@ -24,7 +24,7 @@ class Landing extends State<TabNavigator>{
           BottomNavigationBarItem(
               icon: Icon(
                   Icons.home,
-                  color: Colors.white,
+                  color: Colors.blue,
                 ),
             backgroundColor: Colors.black,
             label: 'Home',
@@ -32,7 +32,7 @@ class Landing extends State<TabNavigator>{
           BottomNavigationBarItem(
             icon: Icon(
                 Icons.add,
-                //color: Colors.white,
+                color: Colors.blue,
             ),
             label: 'New Booking',
             backgroundColor: Colors.black,
@@ -48,7 +48,7 @@ class Landing extends State<TabNavigator>{
         backgroundColor: Colors.black,
       ),
       body: _widgetOptions.elementAt(state),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       );
   }
 
