@@ -7,7 +7,7 @@ class Home extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.white,
       appBar: AppBar(
           title: Column(
             mainAxisAlignment: MainAxisAlignment.center,

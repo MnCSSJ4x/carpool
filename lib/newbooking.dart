@@ -43,7 +43,7 @@ class newBookings extends StatelessWidget {
             ),
           ]
       ),
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.white,
     );
   }
 
