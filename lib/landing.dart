@@ -20,25 +20,19 @@ class Landing extends State<TabNavigator>{
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-              icon: IconButton(
-                onPressed: (){},
-                icon: const Icon(
+              icon: Icon(
                   Icons.home,
                   color: Colors.white,
                 ),
-              ),
             backgroundColor: Colors.black,
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: IconButton(
-              onPressed: (){},
-              icon: const Icon(
+            icon: Icon(
                 Icons.add,
                 //color: Colors.white,
-              ),
             ),
             label: 'New Booking',
             backgroundColor: Colors.black,
