@@ -1,11 +1,10 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:interval_tree/interval_tree.dart';
 import 'package:intl/intl.dart';
-import 'database.dart';
+import 'package:carpool/database.dart';
 
 class User {
   late String emailId;
-  late DatabaseReference _id;
   late String rollNumber;
   late String date; //baadme chnge krna hai ise
   late String time;
@@ -15,14 +14,9 @@ class User {
   void addUserToDatabase(String emailId, rollNumber) {
     this.emailId = emailId;
     this.rollNumber = rollNumber;
-    _id = DataBaseService.saveData(this);
   }
 
   User(this.emailId, this.rollNumber);
-
-  String getId() {
-    return _id.toString();
-  }
 
   void addBooking(DateTime date, int startHour, int endHour) {
     if (travelTime.containsKey(date)) {
@@ -34,7 +28,7 @@ class User {
   }
 
   void updateUser() {
-    DataBaseService.updateDatabase(this, _id);
+    DataBaseService.updatedata(emailId, rollNumber);
   }
 
   Map<String, dynamic> toJson() {
