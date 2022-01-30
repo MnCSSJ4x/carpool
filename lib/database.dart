@@ -2,32 +2,25 @@ import 'package:carpool/LoginForm.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'user.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class DataBaseService {
-  static final databaseReference = FirebaseDatabase.instance.ref();
-  static DatabaseReference saveData(User user) {
-    var id = databaseReference.child('/users').push();
-    id
-        .set(user.toJson())
-        .catchError((error) => print('You got an error $error'));
-    return id;
+  //reference to collection
+
+  static final db = FirebaseFirestore.instance.collection('users');
+  static Future<bool> exists(String uid, String rnum) async {
+    return await (db.where("username", isEqualTo: uid).get())
+        .then((value) => value.size > 0 ? true : false);
   }
 
-  static void updateDatabase(User user, DatabaseReference id) {
-    id.update(user.toJson());
+  static Future updatedata(String uid, String rnum) async {
+    return await db.doc(uid).set({
+      'username': uid,
+      'rollnum': rnum,
+    });
   }
 
-  final CollectionReference userCollection=FirebaseFirestore.instance.collection('user');
-  final String uid;
-  DataBaseService({required this.uid});
-  Future updateUserData(String emailId,String rollNumber)async
-  {
-    return await userCollection.add(
-      {
-        "emailID":emailId,
-        "rollNumber":rollNumber,
-      }
-    );
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> getdata(
+      String uid, String rnum) {
+    return db.doc(uid).snapshots();
   }
 }
