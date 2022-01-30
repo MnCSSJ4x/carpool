@@ -15,7 +15,7 @@ class User {
   void addUserToDatabase(String emailId, rollNumber) {
     this.emailId = emailId;
     this.rollNumber = rollNumber;
-    _id = saveData(this);
+    _id = DataBaseService.saveData(this);
   }
 
   User(this.emailId, this.rollNumber);
@@ -34,7 +34,7 @@ class User {
   }
 
   void updateUser() {
-    updateDatabase(this, this._id);
+    DataBaseService.updateDatabase(this, _id);
   }
 
   Map<String, dynamic> toJson() {
