@@ -13,10 +13,8 @@ class DataBaseService {
   }
 
   static Future updatedata(String uid, String rnum) async {
-    return await db.doc(uid).set({
-      'username': uid,
-      'rollnum': rnum,
-    });
+    User user = User(uid, rnum);
+    return await db.doc(uid).set(user.toJson());
   }
 
   static Stream<DocumentSnapshot<Map<String, dynamic>>> getdata(
