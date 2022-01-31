@@ -15,7 +15,6 @@ class DataBaseService {
   static Future updatedata(User u) async {
     return await db.doc(u.emailId).set(u.toJson());
   }
-
   static Stream<DocumentSnapshot<Map<String, dynamic>>> getdata(
       String uid, String rnum) {
     return db.doc(uid).snapshots();
