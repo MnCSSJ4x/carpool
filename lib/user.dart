@@ -8,6 +8,14 @@ class BookingRecord {
   Interval interval;
   String uid;
   BookingRecord(this.bookingID, this.interval, this.uid);
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'bid': bookingID,
+      'interval': [interval.start, interval.end],
+      'uid': uid,
+    };
+  }
 }
 
 class User {
@@ -24,6 +32,8 @@ class User {
   }
 
   User(this.emailId, this.rollNumber) {
+    dateRecords = [];
+    bookingRecords = [];
     // TODO: fetch from database the dateRecords which will be stored for a old user
     // TODO: then fetch all the bookingRecord for the person (Only upcoming ones)
   }
@@ -37,25 +47,25 @@ class User {
     DataBaseService.updatedata(this);
   }
 
+  Map<String, dynamic> dateJson(DateTime date) {
+    Map<String, dynamic> json = <String, dynamic>{};
+    bookingRecords.forEach((element) {
+      json[element.bookingID] = element.toJson();
+    });
+    return json;
+  }
+
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {};
+    List<String> dateRec = [];
     var newFormat = DateFormat("yyyy-MM-dd");
-    travelTime.forEach((key, value) {
-      map[newFormat.format(key)] = makeList(value);
+    dateRecords.forEach((element) {
+      dateRec.add(newFormat.format(element));
     });
     Map<String, dynamic> json = {
       'emailid': emailId,
       'rollnum': rollNumber,
-      'map': map,
+      'map': dateRec
     };
     return json;
-  }
-
-  List<List<int>> makeList(IntervalTree it) {
-    List<List<int>> list = [];
-    it.toList().forEach((element) {
-      list.add([element.start, element.end]);
-    });
-    return list;
   }
 }
