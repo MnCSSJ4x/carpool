@@ -3,12 +3,19 @@ import 'package:interval_tree/interval_tree.dart';
 import 'package:intl/intl.dart';
 import 'package:carpool/database.dart';
 
+class BookingRecord {
+  String bookingID;
+  Interval interval;
+  String uid;
+  BookingRecord(this.bookingID, this.interval, this.uid);
+}
+
 class User {
-  late String emailId;
-  late String rollNumber;
-  late String date; //baadme chnge krna hai ise
-  late String time;
-  late int posFlexibility = 30, negFlexibility = 30; //in minutes
+  String emailId;
+  String rollNumber;
+  late Map<DateTime, List<BookingRecord>>
+      dateRecords; // All the records based on date of the user only
+  late List<BookingRecord> bookingRecords; // All the booking record
   Map travelTime = <DateTime, IntervalTree>{};
 
   void addUserToDatabase(String emailId, rollNumber) {
@@ -16,15 +23,14 @@ class User {
     this.rollNumber = rollNumber;
   }
 
-  User(this.emailId, this.rollNumber);
+  User(this.emailId, this.rollNumber) {
+    // TODO: fetch from database the dateRecords which will be stored for a old user
+    // TODO: then fetch all the bookingRecord for the person (Only upcoming ones)
+  }
 
   void addBooking(DateTime date, int startHour, int endHour) {
-    if (travelTime.containsKey(date)) {
-      travelTime[date]!.add(Interval(startHour, endHour));
-      return;
-    }
-    travelTime[date] = IntervalTree();
-    travelTime[date]!.add(Interval(startHour, endHour));
+    // TODO: make a new booking record, add it to the bookingRecords.
+    // TODO: add it to apropriate Date Record
   }
 
   void updateUser() {
@@ -41,8 +47,6 @@ class User {
       'emailid': emailId,
       'rollnum': rollNumber,
       'map': map,
-      'posFlexibility': posFlexibility,
-      'negFlexibility': negFlexibility,
     };
     return json;
   }
