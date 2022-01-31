@@ -28,7 +28,7 @@ class User {
   }
 
   void updateUser() {
-    DataBaseService.updatedata(emailId, rollNumber);
+    DataBaseService.updatedata(this);
   }
 
   Map<String, dynamic> toJson() {

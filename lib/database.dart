@@ -12,11 +12,8 @@ class DataBaseService {
         .then((value) => value.size > 0 ? true : false);
   }
 
-  static Future updatedata(String uid, String rnum) async {
-    return await db.doc(uid).set({
-      'username': uid,
-      'rollnum': rnum,
-    });
+  static Future updatedata(User u) async {
+    return await db.doc(u.emailId).set(u.toJson());
   }
 
   static Stream<DocumentSnapshot<Map<String, dynamic>>> getdata(
