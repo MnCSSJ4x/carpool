@@ -13,7 +13,7 @@ class BookingRecord {
 class User {
   String emailId;
   String rollNumber;
-  late Map<DateTime, List<BookingRecord>>
+  late List<DateTime>
       dateRecords; // All the records based on date of the user only
   late List<BookingRecord> bookingRecords; // All the booking record
   Map travelTime = <DateTime, IntervalTree>{};
