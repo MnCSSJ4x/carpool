@@ -1,20 +1,24 @@
 import 'package:carpool/LoginForm.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'user.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class DataBaseService {
-  static final databaseReference = FirebaseDatabase.instance.ref();
+  //reference to collection
 
-  static DatabaseReference saveData(User user) {
-    var id = databaseReference.child('/users').push();
-    id
-        .set(user.toJson())
-        .catchError((error) => print('You got an error $error'));
-    return id;
+  static final dbUsers = FirebaseFirestore.instance.collection('users');
+  static final dbDates = FirebaseFirestore.instance.collection("dates");
+  static Future<bool> exists(String uid, String rnum) async {
+    return await (dbUsers.where("username", isEqualTo: uid).get())
+        .then((value) => value.size > 0 ? true : false);
   }
 
-  static void updateDatabase(User user, DatabaseReference id) {
-    id.update(user.toJson());
+  static Future updatedata(User u) async {
+    return await dbUsers.doc(u.emailId).set(u.toJson());
+  }
+
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> getdata(
+      String uid, String rnum) {
+    return dbUsers.doc(uid).snapshots();
   }
 }

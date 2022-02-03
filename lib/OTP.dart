@@ -1,7 +1,10 @@
 import 'package:carpool/auth.dart';
 import 'package:carpool/database.dart';
+import 'package:carpool/user.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'landing.dart';
 
 // ignore: non_constant_identifier_names
 class OTP extends StatelessWidget {
@@ -14,7 +17,8 @@ class OTP extends StatelessWidget {
   final emailidcontroller;
   final rollnumbercontroller;
 
-  final database = DataBaseService();
+  // final database = DataBaseService();
+  //final CollectionReference userCollection=FirebaseFirestore.instance.collection('user');
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -41,7 +45,7 @@ class OTP extends StatelessWidget {
                     ),
                     Center(
                         child: TextFormField(
-                          style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       keyboardType: TextInputType.number,
                       controller: _otpcontroller,
                       decoration: InputDecoration(
@@ -61,23 +65,20 @@ class OTP extends StatelessWidget {
                         bool flag = await verifyOTP(
                             emailidcontroller, _otpcontroller, context);
                         if (flag) {
-                          var db =
-                              DataBaseService.databaseReference.child('/users');
-                          // db.once().then((DataSnapshot snapshot) {
-                          //   // var keys = snapshot.value.keys;
-                          //   // var values = snapshot.value;
-                          //   // for(var key:keys){
+                          Future<bool> flag1 = DataBaseService.exists(
+                              emailidcontroller.text,
+                              rollnumbercontroller.text);
+                          if (await flag1) {
+                            print("hello success!");
+                          } else {
+                            User user=User(emailidcontroller.text, rollnumbercontroller.text);
+                            DataBaseService.updatedata(user);
+                          }
 
-                          //   // }
-                          // });
-                          DataBaseService.databaseReference
-                              .child('/users')
-                              .push()
-                              .set({
-                            'emailid': emailidcontroller.text,
-                            'rollnum': rollnumbercontroller.text,
-                          }).catchError(
-                                  (error) => print('You got an error $error'));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const TabNavigator()));
                         }
                       },
                       child: const Text(
