@@ -11,14 +11,48 @@ class TabNavigator extends StatefulWidget {
 
 class Landing extends State<TabNavigator>{
   int state = 0;
-  List<Widget> _widgetOptions = <Widget>[
-    Home(),
-    newBookings(),
-  ];
+  DateTime? present, selected;
+  PageController pageController = PageController(initialPage: 0);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "ShareCab",
+                style: TextStyle(color: Colors.white, fontSize: 16.0),
+              ),
+              Text(
+                appcaption(),
+                style: const TextStyle(color: Colors.white, fontSize: 14.0),
+              )
+            ],
+          ),
+
+          leading: const Padding(
+            padding: EdgeInsets.all(5.0),
+            child: CircleAvatar(
+              backgroundImage: AssetImage('assets/logo.png'),
+              backgroundColor: Colors.black,
+            ),
+          ),
+          backgroundColor: Colors.black,
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.date_range,
+                color: Colors.blue,
+              ),
+              onPressed: () {
+                _showCalendar(context);
+              },
+            ),
+          ]
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -41,15 +75,54 @@ class Landing extends State<TabNavigator>{
         type: BottomNavigationBarType.shifting,
         currentIndex: state,
         onTap: (index){
-              setState(() {
-                state = index;
-              });
+              pageController.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.ease);
           },
         backgroundColor: Colors.black,
       ),
-      body: _widgetOptions.elementAt(state),
+
+      body: PageView(
+        controller: pageController,
+        onPageChanged: (index){
+          setState(() {
+            state = index;
+          });
+        },
+        children: [
+          Home(),
+          newBookings(),
+        ],
+      ),
       backgroundColor: Colors.black,
       );
   }
 
+  _showCalendar(BuildContext context) async {
+    if(state==0) {
+      present = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2060),
+      );
+    }
+    else{
+      selected = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2060),
+      );
+    }
+  }
+
+  String appcaption(){
+    String a;
+    if(state==0){
+      a = "Your bookings";
+    }
+    else{
+      a = "Add a New Booking";
+    }
+    return a;
+  }
 }
