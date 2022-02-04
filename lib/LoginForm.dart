@@ -1,5 +1,6 @@
 import 'package:carpool/auth.dart';
 import 'package:carpool/user.dart';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -20,6 +21,7 @@ class LoginForm extends StatelessWidget {
   final String orgid;
   final TextEditingController email_id_controller;
   final TextEditingController roll_num_controller;
+  static late User u;
 
   @override
   Widget build(BuildContext context) {
