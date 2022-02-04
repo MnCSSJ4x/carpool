@@ -25,7 +25,8 @@ class LoginForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Form(
       key: form_key,
-      child: Center(
+      child: GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: Card(
               color: Colors.black87,
               child: Padding(

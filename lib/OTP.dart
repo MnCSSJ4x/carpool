@@ -4,6 +4,7 @@ import 'package:carpool/user.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:string_validator/string_validator.dart';
 import 'landing.dart';
 
 // ignore: non_constant_identifier_names
@@ -21,7 +22,8 @@ class OTP extends StatelessWidget {
   //final CollectionReference userCollection=FirebaseFirestore.instance.collection('user');
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
             // appBar: AppBar(
             //   backgroundColor: Colors.black,
@@ -45,6 +47,12 @@ class OTP extends StatelessWidget {
                     ),
                     Center(
                         child: TextFormField(
+                          validator: (value) {
+                            if (value != null) {
+                              return null;
+                            }
+                            return "Please Enter OTP";
+                          },
                       style: const TextStyle(color: Colors.white),
                       keyboardType: TextInputType.number,
                       controller: _otpcontroller,
@@ -93,7 +101,28 @@ class OTP extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30)),
                       ),
-                    ))
+                    ),
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                            //add backend
+                            sendOTP(emailidcontroller);
+                          },
+                        child: const Text(
+                          "Resend OTP",
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontFamily: 'Helvetica'),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                        ),
+                    ),
+                    ),
                   ],
                 ))));
   }
