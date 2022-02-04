@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carpool/LoginForm.dart';
+import 'package:string_validator/string_validator.dart';
 import 'landing.dart';
 
 // ignore: non_constant_identifier_names
@@ -17,7 +18,8 @@ class OTP extends StatelessWidget {
   //final CollectionReference userCollection=FirebaseFirestore.instance.collection('user');
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Scaffold(
             // appBar: AppBar(
             //   backgroundColor: Colors.black,
@@ -38,6 +40,12 @@ class OTP extends StatelessWidget {
                     ),
                     Center(
                         child: TextFormField(
+                      validator: (value) {
+                        if (value != null) {
+                          return null;
+                        }
+                        return "Please Enter OTP";
+                      },
                       style: const TextStyle(color: Colors.white),
                       keyboardType: TextInputType.number,
                       controller: _otpcontroller,
@@ -52,34 +60,51 @@ class OTP extends StatelessWidget {
                       height: 15,
                     ),
                     Center(
-                        child: ElevatedButton(
-                      onPressed: () async {
-                        bool flag = await verifyOTP(emailidcontroller, _otpcontroller, context);
-                        if (flag) {
-                          Future<bool> flag1 = DataBaseService.exists(emailidcontroller.text, rollnumbercontroller.text);
-                          if (await flag1) {
-                            //get existing user
-                            LoginForm.u = DataBaseService.getdata(emailidcontroller.text) as User;
-                            await LoginForm.u.fetchBookingRecord();
-                            print("hello success!");
-                          } else {
-                            LoginForm.u = User(emailId: emailidcontroller.text, rollNumber: rollnumbercontroller.text, dateRecords: []);
-                            DataBaseService.updatedata(LoginForm.u);
-                            LoginForm.u.addBooking(DateTime(2022, 1, 4), 6, 7);
-                          }
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          bool flag = await verifyOTP(emailidcontroller, _otpcontroller, context);
+                          if (flag) {
+                            Future<bool> flag1 = DataBaseService.exists(emailidcontroller.text, rollnumbercontroller.text);
+                            if (await flag1) {
+                              //get existing user
+                              LoginForm.u = DataBaseService.getdata(emailidcontroller.text) as User;
+                              await LoginForm.u.fetchBookingRecord();
+                              print("hello success!");
+                            } else {
+                              LoginForm.u = User(emailId: emailidcontroller.text, rollNumber: rollnumbercontroller.text, dateRecords: []);
+                              DataBaseService.updatedata(LoginForm.u);
+                              LoginForm.u.addBooking(DateTime(2022, 1, 4), 6, 7);
+                            }
 
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const TabNavigator()));
-                        }
-                      },
-                      child: const Text(
-                        "Verify OTP",
-                        style: TextStyle(fontSize: 12, color: Colors.white, fontFamily: 'Helvetica'),
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const TabNavigator()));
+                          }
+                        },
+                        child: const Text(
+                          "Verify OTP",
+                          style: TextStyle(fontSize: 12, color: Colors.white, fontFamily: 'Helvetica'),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blue,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          //add backend
+                          sendOTP(emailidcontroller);
+                        },
+                        child: const Text(
+                          "Resend OTP",
+                          style: TextStyle(fontSize: 12, color: Colors.white, fontFamily: 'Helvetica'),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.green,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                        ),
                       ),
-                    ))
+                    ),
                   ],
                 ))));
   }
