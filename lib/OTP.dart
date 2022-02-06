@@ -67,13 +67,15 @@ class OTP extends StatelessWidget {
                             Future<bool> flag1 = DataBaseService.exists(emailidcontroller.text, rollnumbercontroller.text);
                             if (await flag1) {
                               //get existing user
-                              LoginForm.u = DataBaseService.getdata(emailidcontroller.text) as User;
+                              print(DataBaseService.getData(emailidcontroller.text));
+                              LoginForm.u = await DataBaseService.getData(emailidcontroller.text);
                               await LoginForm.u.fetchBookingRecord();
                               print("hello success!");
                             } else {
                               LoginForm.u = User(emailId: emailidcontroller.text, rollNumber: rollnumbercontroller.text, dateRecords: []);
-                              DataBaseService.updatedata(LoginForm.u);
                               LoginForm.u.addBooking(DateTime(2022, 1, 4), 6, 7);
+                              LoginForm.u.addBooking(DateTime(2022, 1, 4), 9, 10);
+                              LoginForm.u.update();
                             }
 
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const TabNavigator()));

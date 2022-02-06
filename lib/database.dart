@@ -10,16 +10,33 @@ class DataBaseService {
   static final dbUsers = FirebaseFirestore.instance.collection('users');
   static final dbDates = FirebaseFirestore.instance.collection('dates');
   static Future<bool> exists(String uid, String rnum) async {
-    return await (dbUsers.where("username", isEqualTo: uid).get()).then((value) => value.size > 0 ? true : false);
+    return await (dbUsers.where("emailid", isEqualTo: uid).get()).then((value) => value.size > 0 ? true : false);
   }
 
   static Future updatedata(User u) async {
     return await dbUsers.doc(u.emailId).set(u.toJson());
   }
 
-  static Stream<DocumentSnapshot<Map<String, dynamic>>> getdata(String uid) {
-    return dbUsers.doc(uid).snapshots();
+  static Future<Stream<User>> getdatastream(String uid) async {
+    return dbUsers.doc(uid).snapshots().map(_datafromsnap);
   }
+
+  static Future<User> getData(String uid) async {
+    DocumentSnapshot<Map<String, dynamic>> temp = await dbUsers.doc(uid).get();
+    return User.fromJson(temp.data());
+  }
+
+  static User _datafromsnap(DocumentSnapshot snap) {
+    return User(
+      rollNumber: snap.get('rollnum'),
+      emailId: snap.get('emailid'),
+      dateRecords: snap.get('dates'),
+    );
+  }
+
+  // Stream<QuerySnapshot> getuser() {
+  //   return dbUsers.snapshots();
+  // }
 
   // ignore: non_constant_identifier_names
   static Future AddRecord(DateTime date) async {

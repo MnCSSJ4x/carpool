@@ -14,9 +14,10 @@ class BookingRecord {
   }
 
   Map<String, dynamic> toJson() {
-    List<List<int>> intervals = [];
+    List<Map<String, dynamic>> intervals = [];
     this.intervals.forEach((element) {
-      intervals.add([element.start, element.end]);
+      intervals.add({});
+      intervals.last["list"] = [element.start, element.end];
     });
     return <String, dynamic>{'interval': intervals, 'uid': uid, 'date': date};
   }
@@ -57,7 +58,6 @@ class User {
     required String this.emailId,
     required List<DateTime> this.dateRecords,
   }) {
-    dateRecords = [];
     bookingRecords = [];
     // TODO: fetch from database the dateRecords which will be stored for a old user
 
@@ -68,11 +68,21 @@ class User {
     // TODO: make a new booking record, add it to the bookingRecords.
     var newFormat = DateFormat("yyyy-MM-dd");
     String dt = newFormat.format(date);
+    bool flag = true;
     bookingRecords.forEach((element) {
       if (element.date == dt) {
         element.addInterval(Interval(startHour, endHour));
+        flag = false;
       }
     });
+    if (flag) {
+      BookingRecord br = BookingRecord(emailId, dt);
+      br.addInterval(Interval(startHour, endHour));
+      bookingRecords.add(br);
+    }
+    if (!dateRecords.contains(date)) {
+      dateRecords.add(date);
+    }
     // TODO: add it to apropriate Date Recordfactory User.fromJson(Map<String, dynamic> data) {
   }
 
@@ -95,10 +105,22 @@ class User {
     });
   }
 
+  void update() {
+    DataBaseService.updatedata(this);
+    dateRecords.forEach((element) {
+      DataBaseService.AddRecord(element);
+    });
+  }
+
   Future<Map<String, dynamic>> dateJson(DateTime date) async {
     var newFormat = DateFormat("yyyy-MM-dd");
     String dt = newFormat.format(date);
-    List<BookingRecord> arr = await DataBaseService.getBookingRecordsbyDate(dt);
+    late List<BookingRecord> arr;
+    try {
+      arr = await DataBaseService.getBookingRecordsbyDate(dt);
+    } catch (e) {
+      arr = [];
+    }
     bool flag = true;
     bookingRecords.forEach((element) {
       if (element.date == dt) {
@@ -114,7 +136,11 @@ class User {
         arr.add(element);
       }
     });
-    return <String, dynamic>{'list': arr};
+    List<Map<String, dynamic>> out = [];
+    arr.forEach((element) {
+      out.add(element.toJson());
+    });
+    return <String, dynamic>{'list': out};
   }
 
   Map<String, dynamic> toJson() {
@@ -127,10 +153,12 @@ class User {
     return json;
   }
 
-  factory User.fromJson(Map<String, dynamic> data) {
-    final String emailId = data['emailId'] as String;
-    final String rollNumber = data['rollNumber'] as String;
-    late List<DateTime> dateRecords = data['dateRecords'] as List<DateTime>;
+  factory User.fromJson(Map<String, dynamic>? data) {
+    final String emailId = data!['emailid'] as String;
+    final String rollNumber = data['rollnum'] as String;
+    List<dynamic> temp = data['dates'] as List<dynamic>;
+    List<DateTime> dateRecords = [];
+    temp.forEach((element) => {dateRecords.add(DateTime.parse(element))});
 
     return User(emailId: emailId, rollNumber: rollNumber, dateRecords: dateRecords);
   }
