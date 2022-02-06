@@ -91,6 +91,9 @@ class OTP extends StatelessWidget {
                         ),
                       ),
                     ),
+                    SizedBox(
+                      height: 5,
+                    ),
                     Center(
                       child: ElevatedButton(
                         onPressed: () {
