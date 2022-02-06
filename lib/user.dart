@@ -56,7 +56,8 @@ class BookingRecord {
 class User {
   String emailId;
   String rollNumber;
-  late List<DateTime> dateRecords; // All the records based on date of the user only
+  late List<DateTime>
+      dateRecords; // All the records based on date of the user only
   late List<BookingRecord> bookingRecords; // All the booking record
   //Map travelTime = <DateTime, IntervalTree>{};
 
@@ -102,7 +103,8 @@ class User {
     dateRecords.forEach((element) async {
       var newFormat = DateFormat("yyyy-MM-dd");
       String dt = newFormat.format(element);
-      List<BookingRecord> arr = await DataBaseService.getBookingRecordsbyDate(dt); // lets say we got an array
+      List<BookingRecord> arr = await DataBaseService.getBookingRecordsbyDate(
+          dt); // lets say we got an array
       bool flag = false;
       late BookingRecord reqRecord;
       arr.forEach((element) {
@@ -161,7 +163,11 @@ class User {
     dateRecords.forEach((element) {
       dateRec.add(newFormat.format(element));
     });
-    Map<String, dynamic> json = {'emailid': emailId, 'rollnum': rollNumber, 'dates': dateRec};
+    Map<String, dynamic> json = {
+      'emailid': emailId,
+      'rollnum': rollNumber,
+      'dates': dateRec
+    };
     return json;
   }
 
@@ -172,6 +178,7 @@ class User {
     List<DateTime> dateRecords = [];
     temp.forEach((element) => {dateRecords.add(DateTime.parse(element))});
 
-    return User(emailId: emailId, rollNumber: rollNumber, dateRecords: dateRecords);
+    return User(
+        emailId: emailId, rollNumber: rollNumber, dateRecords: dateRecords);
   }
 }

@@ -10,7 +10,8 @@ class DataBaseService {
   static final dbUsers = FirebaseFirestore.instance.collection('users');
   static final dbDates = FirebaseFirestore.instance.collection('dates');
   static Future<bool> exists(String uid, String rnum) async {
-    return await (dbUsers.where("emailid", isEqualTo: uid).get()).then((value) => value.size > 0 ? true : false);
+    return await (dbUsers.where("emailid", isEqualTo: uid).get())
+        .then((value) => value.size > 0 ? true : false);
   }
 
   static Future updatedata(User u) async {
@@ -46,7 +47,8 @@ class DataBaseService {
     return await dbDates.doc(dt).set(await LoginForm.u.dateJson(date));
   }
 
-  static Future<List<BookingRecord>> getBookingRecordsbyDate(String date) async {
+  static Future<List<BookingRecord>> getBookingRecordsbyDate(
+      String date) async {
     //dbUsers -> database as a list
 
     DocumentSnapshot<Map<String, dynamic>> temp = await dbDates.doc(date).get();
