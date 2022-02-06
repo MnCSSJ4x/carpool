@@ -56,8 +56,7 @@ class BookingRecord {
 class User {
   String emailId;
   String rollNumber;
-  late List<DateTime>
-      dateRecords; // All the records based on date of the user only
+  late List<DateTime> dateRecords; // All the records based on date of the user only
   late List<BookingRecord> bookingRecords; // All the booking record
   //Map travelTime = <DateTime, IntervalTree>{};
 
@@ -103,8 +102,7 @@ class User {
     dateRecords.forEach((element) async {
       var newFormat = DateFormat("yyyy-MM-dd");
       String dt = newFormat.format(element);
-      List<BookingRecord> arr = await DataBaseService.getBookingRecordsbyDate(
-          dt); // lets say we got an array
+      List<BookingRecord> arr = await DataBaseService.getBookingRecordsbyDate(dt); // lets say we got an array
       bool flag = false;
       late BookingRecord reqRecord;
       arr.forEach((element) {
@@ -119,10 +117,10 @@ class User {
     });
   }
 
-  void update() {
-    DataBaseService.updatedata(this);
-    dateRecords.forEach((element) {
-      DataBaseService.AddRecord(element);
+  Future<void> update() async {
+    await DataBaseService.updatedata(this);
+    dateRecords.forEach((element) async {
+      await DataBaseService.AddRecord(element);
     });
   }
 
@@ -163,12 +161,38 @@ class User {
     dateRecords.forEach((element) {
       dateRec.add(newFormat.format(element));
     });
-    Map<String, dynamic> json = {
-      'emailid': emailId,
-      'rollnum': rollNumber,
-      'dates': dateRec
-    };
+    Map<String, dynamic> json = {'emailid': emailId, 'rollnum': rollNumber, 'dates': dateRec};
     return json;
+  }
+
+  Future<List<BookingRecord>> getBookingMatching(BookingRecord br) async {
+    List<BookingRecord> brs = await DataBaseService.getBookingRecordsbyDate(br.date);
+    int temp_ind = -1;
+    for (int i = 0; i < brs.length; i++) {
+      if (brs[i].uid == br.uid) {
+        temp_ind = i;
+      }
+    }
+    if (temp_ind >= 0) {
+      brs.remove(temp_ind);
+    }
+    List<BookingRecord> ret = [];
+    //br apna hee hai bhai
+    for (var interval in br.intervals) {
+      for (var bookingRecord in brs) {
+        List<Interval> temp = bookingRecord.intervals;
+
+        for (var element in temp) {
+          if (intersects(element, interval)) {
+            BookingRecord temp_br = BookingRecord(bookingRecord.uid, bookingRecord.date);
+            temp_br.addInterval(element.intersection(interval)!);
+            ret.add(temp_br);
+            break;
+          }
+        }
+      }
+    }
+    return ret;
   }
 
   factory User.fromJson(Map<String, dynamic>? data) {
@@ -178,7 +202,28 @@ class User {
     List<DateTime> dateRecords = [];
     temp.forEach((element) => {dateRecords.add(DateTime.parse(element))});
 
-    return User(
-        emailId: emailId, rollNumber: rollNumber, dateRecords: dateRecords);
+    return User(emailId: emailId, rollNumber: rollNumber, dateRecords: dateRecords);
+  }
+
+  static bool intersects(Interval i1, Interval i2) {
+    //i1.endtime  < i2.starttiem provided i1.starttime<i2.starttime
+    //i2.endtime < i1.starttime provided i2.starttime<i1.starttime
+    if (i1.end < i2.start && i1.start < i2.start) {
+      return false;
+    } else if (i2.end < i1.start && i1.start > i2.start) {
+      return false;
+    }
+    return true;
   }
 }
+
+//ADD user side
+//USER (given) -> addrecord(date)
+//
+
+//TO-DO :
+//RECIEVE (user given)
+//for a given date for a given user
+//  getdateRecords(d)
+//  Perform interval matching on recived records
+//  based on return value display output

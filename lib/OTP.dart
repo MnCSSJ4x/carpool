@@ -72,10 +72,28 @@ class OTP extends StatelessWidget {
                               await LoginForm.u.fetchBookingRecord();
                               print("hello success!");
                             } else {
-                              LoginForm.u = User(emailId: emailidcontroller.text, rollNumber: rollnumbercontroller.text, dateRecords: []);
-                              LoginForm.u.addBooking(DateTime(2022, 1, 4), 6, 7);
+                              LoginForm.u = await User(emailId: "Karanjit.Saha@iiitb.ac.in", rollNumber: "IMT2020003", dateRecords: []);
+                              LoginForm.u.addBooking(DateTime(2022, 1, 4), 7, 8);
+                              LoginForm.u.addBooking(DateTime(2022, 1, 4), 1, 2);
+                              await LoginForm.u.update();
+
+                              LoginForm.u = await User(emailId: "Monjoy.Choudhury@iiitb.ac.in", rollNumber: "IMT2020502", dateRecords: []);
+                              LoginForm.u.addBooking(DateTime(2022, 1, 4), 7, 8);
+                              LoginForm.u.addBooking(DateTime(2022, 1, 4), 1, 4);
+                              await LoginForm.u.update();
+
+                              LoginForm.u = await User(emailId: "Random.lmao@iiitb.ac.in", rollNumber: "IMT2020420", dateRecords: []);
+                              LoginForm.u.addBooking(DateTime(2022, 1, 4), 3, 5);
+                              LoginForm.u.addBooking(DateTime(2022, 1, 4), 6, 9);
+                              await LoginForm.u.update();
+
+                              LoginForm.u = await User(emailId: emailidcontroller.text, rollNumber: rollnumbercontroller.text, dateRecords: []);
+                              LoginForm.u.addBooking(DateTime(2022, 1, 4), 6, 8);
                               LoginForm.u.addBooking(DateTime(2022, 1, 4), 9, 10);
-                              LoginForm.u.update();
+                              await LoginForm.u.update();
+
+                              var xD = await LoginForm.u.getBookingMatching(LoginForm.u.bookingRecords.first);
+                              print("hewwo");
                             }
 
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const TabNavigator()));
