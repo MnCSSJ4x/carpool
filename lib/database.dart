@@ -49,8 +49,8 @@ class DataBaseService {
   static Future<List<BookingRecord>> getBookingRecordsbyDate(String date) async {
     //dbUsers -> database as a list
 
-    dynamic recs = dbDates.doc(date).get();
-    return recs.toObject<List<BookingRecord>>();
+    DocumentSnapshot<Map<String, dynamic>> temp = await dbDates.doc(date).get();
+    return BookingRecord.fromJson(temp.data());
   }
   //Dates-> has date -> h<>as -> record ;
 

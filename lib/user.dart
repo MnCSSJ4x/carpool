@@ -35,6 +35,18 @@ class BookingRecord {
     return false;
   }
 
+  static List<BookingRecord> fromJson(Map<String, dynamic>? data) {
+    List<dynamic> list = data!["list"];
+    List<BookingRecord> brs = [];
+    list.forEach((element) {
+      brs.add(BookingRecord(element["uid"], element["date"]));
+      element["interval"].forEach((map) {
+        brs.last.addInterval(Interval(map["list"].first, map["list"].last));
+      });
+    });
+    return brs;
+  }
+
   //database sein user wala access karo. see all dates for booking
   //date == humare date , add booking record to list .
   //parse to JSON
