@@ -51,9 +51,20 @@ class Landing extends State<TabNavigator>{
                 _showCalendar(context);
               },
             ),
-          ]
+          ],
+          shape: const Border(
+          bottom: BorderSide(
+            color: Color(0xFF424242),
+          )
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            top: BorderSide(width: 0.5, color: Color(0xFF424242)),
+          )
+        ),
+      child: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: Icon(
@@ -78,8 +89,9 @@ class Landing extends State<TabNavigator>{
               pageController.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.ease);
           },
         backgroundColor: Colors.black,
-      ),
 
+      ),
+      ),
       body: PageView(
         controller: pageController,
         onPageChanged: (index){
@@ -93,6 +105,7 @@ class Landing extends State<TabNavigator>{
         ],
       ),
       backgroundColor: Colors.black,
+
       );
   }
 
