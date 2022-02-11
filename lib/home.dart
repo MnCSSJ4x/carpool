@@ -25,7 +25,7 @@ class Homepage extends State<Home>{
         ),
       )
   );
-  List<a.Interval> userintervals = [];
+  List<a.Interval> userintervals = [a.Interval(2, 3), a.Interval(5, 6)];
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,40 @@ class Homepage extends State<Home>{
     return Scaffold(
       backgroundColor: Colors.black,
       body: Container(
-        child: presentwidget,
+        child: ListView.builder(
+          padding:const EdgeInsets.all(10),
+          itemCount: userintervals.length,
+          itemBuilder: (BuildContext context, int index) {
+            //print(LoginForm.u.present);
+            String starttime = userintervals[index].start.toString() + ":00";
+            String endtime = userintervals[index].end.toString() + ":00";
+
+            return Container(
+              margin: const EdgeInsets.all(7),
+              child: ListTile(
+                  leading: const Icon(
+                    Icons.car_rental,
+                    color: Colors.white,
+                  ),
+                  title: Text(
+                    "Booking Time: $starttime to $endtime",
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  tileColor: const Color(0xFF319177),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  trailing: IconButton(
+                    onPressed: (){},
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Colors.white,
+                    )
+                  ),
+                ),
+            );
+          },
+        ),
       ),
     );
   }
