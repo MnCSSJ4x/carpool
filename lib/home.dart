@@ -3,6 +3,7 @@ import 'package:carpool/user.dart';
 import 'package:carpool/LoginForm.dart';
 import 'package:interval_tree/interval_tree.dart' as a;
 import 'package:intl/intl.dart';
+import 'package:carpool/bookingdetails.dart';
 
 class Home extends StatefulWidget {
   Home ({Key? key}) : super(key: key);
@@ -16,6 +17,8 @@ class Home extends StatefulWidget {
   }
 }
 
+enum Options{ Remove, ShowDetails }
+
 class Homepage extends State<Home>{
   Widget presentwidget = Container(
       child: const Center(
@@ -26,6 +29,71 @@ class Homepage extends State<Home>{
       )
   );
   List<a.Interval> userintervals = [a.Interval(2, 3), a.Interval(5, 6)];
+
+  
+
+  Future<void>OpenDialog()async{
+    switch(await showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return SimpleDialog(
+          backgroundColor: Color(0xFF212121),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          title: const Text(
+            "Information about the booking",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          children: <Widget>[
+            SimpleDialogOption(
+              onPressed: (){Navigator.pop(context,Options.ShowDetails);},
+              child: const ListTile(
+                leading: Icon(
+                  Icons.list,
+                  color: Colors.blue,
+                ),
+                title: Text(
+                  "Show Details",
+                  style: TextStyle(color: Colors.white),
+                ),
+                tileColor: Color(0xFF303030),
+
+              ),
+            ),
+            SimpleDialogOption(
+              onPressed: (){Navigator.pop(context,Options.Remove);},
+              child: ListTile(
+                leading: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+                title: const Text(
+                  "Cancel Booking",
+                  style: TextStyle(color: Colors.white),
+                ),
+                tileColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(7),
+                ),
+              ),
+            ), 
+          ],
+          );
+      }
+    ))
+    {
+      case Options.ShowDetails:
+      // Let's go.
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetails("11-02-2022", "2:00", "3:00")));
+      print("show details clicked");
+      break;
+      case Options.Remove:
+        // ...
+      print("remove clicked");
+      break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +125,9 @@ class Homepage extends State<Home>{
                     borderRadius: BorderRadius.circular(10),
                   ),
                   trailing: IconButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      OpenDialog();
+                    },
                     icon: const Icon(
                       Icons.more_vert,
                       color: Colors.white,
