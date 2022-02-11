@@ -20,14 +20,13 @@ class Home extends StatefulWidget {
 enum Options { Remove, ShowDetails }
 
 class Homepage extends State<Home> {
-  Widget presentwidget = Container(
-      child: const Center(
-    child: Text(
-      "You have no bookings available for the selected date.",
-      style: TextStyle(color: Colors.white, fontFamily: 'Helvetica'),
-    ),
-  ));
-  List<a.Interval> userintervals = [a.Interval(2, 3), a.Interval(5, 6)];
+  late Widget presentwidget;
+
+  // List<a.Interval> userintervals = [];
+
+  User curUser = LoginForm.u;
+  late BookingRecord? curBookingRecord;
+  late int curIntervalIndex;
 
   Future<void> OpenDialog() async {
     switch (await showDialog(
@@ -85,16 +84,14 @@ class Homepage extends State<Home> {
         })) {
       case Options.ShowDetails:
         // Let's go.
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    BookingDetails("11-02-2022", "2:00", "3:00")));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetails("11-02-2022", "2:00", "3:00")));
+        // TODO: connect with backend
         print("show details clicked");
         break;
       case Options.Remove:
         //remove stuff from databse
         //call build ui
+
         print("remove clicked");
         break;
     }
@@ -103,119 +100,76 @@ class Homepage extends State<Home> {
   @override
   Widget build(BuildContext context) {
     //bookings();
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Container(
-        child: ListView.builder(
-          padding: const EdgeInsets.all(10),
-          itemCount: userintervals.length,
-          itemBuilder: (BuildContext context, int index) {
-            //print(LoginForm.u.present);
-            String starttime = userintervals[index].start.toString() + ":00";
-            String endtime = userintervals[index].end.toString() + ":00";
-
-            return Container(
-              margin: const EdgeInsets.all(7),
-              child: ListTile(
-                leading: const Icon(
-                  Icons.car_rental,
-                  color: Colors.white,
-                ),
-                title: Text(
-                  "Booking Time: $starttime to $endtime",
-                  style: const TextStyle(color: Colors.white),
-                ),
-                tileColor: const Color(0xFF319177),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                trailing: IconButton(
-                    onPressed: () {
-                      OpenDialog();
-                    },
-                    icon: const Icon(
-                      Icons.more_vert,
-                      color: Colors.white,
-                    )),
-              ),
-            );
-          },
-        ),
-      ),
-    );
+    return Scaffold(backgroundColor: Colors.black, body: presentwidget);
   }
 
   void bookings() {
     setState(() {
-      if (userintervals.length != 0) {
-        print(0);
-        presentwidget = Container(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(10),
-            itemCount: userintervals.length,
-            itemBuilder: (BuildContext context, int index) {
-              //print(LoginForm.u.present);
-              String starttime = userintervals[index].start.toString() + ":00";
-              String endtime = userintervals[index].end.toString() + ":00";
+      if (curBookingRecord != null) {
+        if (curBookingRecord!.intervals.isNotEmpty) {
+          print(0);
+          presentwidget = Container(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(10),
+              itemCount: curBookingRecord!.intervals.length,
+              itemBuilder: (BuildContext context, int index) {
+                //print(LoginForm.u.present);
+                String starttime = curBookingRecord!.intervals[index].start.toString() + ":00";
+                String endtime = curBookingRecord!.intervals[index].end.toString() + ":00";
 
-              return Container(
-                margin: const EdgeInsets.all(10),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    leading: const Icon(
-                      Icons.car_rental,
-                      color: Colors.white,
-                    ),
-                    title: Text(
-                      "Booking Time: $starttime to $endtime",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    tileColor: Colors.teal,
+                return Container(
+                  margin: const EdgeInsets.all(10),
+                  child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    child: ListTile(
+                        leading: const Icon(
+                          Icons.car_rental,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          "Booking Time: $starttime to $endtime",
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        tileColor: Colors.teal,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        trailing: IconButton(
+                            onPressed: () {
+                              OpenDialog();
+                            },
+                            icon: const Icon(
+                              Icons.more_vert,
+                              color: Colors.white,
+                            ))),
                   ),
-                ),
-              );
-            },
-          ),
-        );
-      } else {
-        print(1);
-        presentwidget = Container(
-            child: const Center(
-          child: Text(
-            "You have no bookings available for the selected date.",
-            style: TextStyle(color: Colors.white, fontFamily: 'Helvetica'),
-          ),
-        ));
+                );
+              },
+            ),
+          );
+        } else {
+          print(1);
+          presentwidget = Container(
+              child: const Center(
+            child: Text(
+              "You have no bookings available for the selected date.",
+              style: TextStyle(color: Colors.white, fontFamily: 'Helvetica'),
+            ),
+          ));
+        }
       }
     });
   }
 
   void setbookings() async {
     print("setbookings called");
-    bool flag = false;
-    List<BookingRecord> temp = LoginForm.u.bookingRecords;
     var newFormat = DateFormat("yyyy-MM-dd");
     String dt = newFormat.format(LoginForm.u.present!);
-    for (int i = 0; i < temp.length; i++) {
-      if (dt == temp[i].date) {
-        print("bookings found");
-        for (int j = 0; j < temp[i].intervals.length; j++) {
-          userintervals.add(temp[i].intervals[j]);
-        }
-        flag = true;
-        print(userintervals.length);
-      }
-    }
-    if (!flag) {
-      print("karan");
-      userintervals.clear();
-    }
+    curBookingRecord = null;
+    curIntervalIndex = -1;
+    curUser = LoginForm.u;
     bookings();
   }
 }

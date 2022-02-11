@@ -73,6 +73,8 @@ class User {
     required List<DateTime> this.dateRecords,
   }) {
     bookingRecords = [];
+    present = DateTime.now();
+    selected = DateTime.now();
     // TODO: fetch from database the dateRecords which will be stored for a old user
 
     // TODO: then fetch all the bookingRecord for the person (Only upcoming ones)
