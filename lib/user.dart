@@ -7,7 +7,8 @@ class BookingRecord {
   List<Interval> intervals = [];
   String uid;
   String date;
-  BookingRecord(this.uid, this.date);
+  // String startLoc, endLoc;
+  BookingRecord(this.uid, this.date /*, this.startLoc, this.endLoc*/);
 
   void addInterval(Interval interval) {
     intervals.add(interval);
@@ -29,7 +30,7 @@ class BookingRecord {
       return false;
     }
     bookingRecord as BookingRecord;
-    if (bookingRecord.uid == uid) {
+    if (bookingRecord.uid == uid && bookingRecord.date == date) {
       return true;
     }
     return false;
@@ -99,6 +100,34 @@ class User {
     // TODO: add it to apropriate Date Recordfactory User.fromJson(Map<String, dynamic> data) {
   }
 
+  void deleteBooking(BookingRecord bookingRecord, Interval interval) async {
+    // verification
+    if (bookingRecord.uid != emailId) {
+      throw Exception("|Wrong Booking Record");
+    }
+    String date = bookingRecord.date;
+    bookingRecords.remove(bookingRecord);
+    bookingRecord.intervals.remove(interval);
+
+    if (bookingRecord.intervals.isNotEmpty) {
+      bookingRecords.add(bookingRecord);
+    }
+
+    bool toRemoveDate = true;
+    bookingRecords.forEach((element) {
+      if (element.date == date) {
+        toRemoveDate = false;
+      }
+    });
+    if (toRemoveDate) {
+      dateRecords.remove(DateTime.parse(date));
+    }
+    if (dateRecords.isEmpty) {
+      await DataBaseService.AddRecord(DateTime.parse(date));
+    }
+    await update();
+  }
+
   Future<void> fetchBookingRecord() async {
     dateRecords.forEach((element) async {
       var newFormat = DateFormat("yyyy-MM-dd");
@@ -134,18 +163,22 @@ class User {
     } catch (e) {
       arr = [];
     }
-    bool flag = true;
+
+    List<BookingRecord> temp = [];
+    arr.forEach((element) {
+      if (element.uid == emailId) {
+        temp.add(element);
+      }
+    });
+
+    temp.forEach((element) {
+      arr.remove(element);
+    });
+
+    temp.clear();
+
     bookingRecords.forEach((element) {
       if (element.date == dt) {
-        for (int i = 0; i < arr.length; i++) {
-          if (arr[i] == element) {
-            arr[i] = element;
-            flag = false;
-            break;
-          }
-        }
-      }
-      if (flag) {
         arr.add(element);
       }
     });
@@ -168,15 +201,7 @@ class User {
 
   Future<List<BookingRecord>> getBookingMatching(BookingRecord br) async {
     List<BookingRecord> brs = await DataBaseService.getBookingRecordsbyDate(br.date);
-    int temp_ind = -1;
-    for (int i = 0; i < brs.length; i++) {
-      if (brs[i].uid == br.uid) {
-        temp_ind = i;
-      }
-    }
-    if (temp_ind >= 0) {
-      brs.remove(temp_ind);
-    }
+    brs.remove(br);
     List<BookingRecord> ret = [];
     //br apna hee hai bhai
     for (var interval in br.intervals) {
@@ -185,6 +210,7 @@ class User {
 
         for (var element in temp) {
           if (intersects(element, interval)) {
+            // temporary other users booking records
             BookingRecord temp_br = BookingRecord(bookingRecord.uid, bookingRecord.date);
             temp_br.addInterval(element.intersection(interval)!);
             ret.add(temp_br);

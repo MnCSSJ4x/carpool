@@ -2,6 +2,7 @@ import 'package:carpool/auth.dart';
 import 'package:carpool/database.dart';
 import 'package:carpool/user.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carpool/LoginForm.dart';
@@ -65,13 +66,7 @@ class OTP extends StatelessWidget {
                           bool flag = await verifyOTP(emailidcontroller, _otpcontroller, context);
                           if (flag) {
                             Future<bool> flag1 = DataBaseService.exists(emailidcontroller.text, rollnumbercontroller.text);
-                            if (await flag1) {
-                              //get existing user
-                              print(DataBaseService.getData(emailidcontroller.text));
-                              LoginForm.u = await DataBaseService.getData(emailidcontroller.text);
-                              await LoginForm.u.fetchBookingRecord();
-                              print("hello success!");
-                            } else {
+                            if (kDebugMode) {
                               LoginForm.u = await User(emailId: "Karanjit.Saha@iiitb.ac.in", rollNumber: "IMT2020003", dateRecords: []);
                               LoginForm.u.addBooking(DateTime(2022, 1, 4), 7, 8);
                               LoginForm.u.addBooking(DateTime(2022, 1, 4), 1, 2);
@@ -94,8 +89,23 @@ class OTP extends StatelessWidget {
 
                               var xD = await LoginForm.u.getBookingMatching(LoginForm.u.bookingRecords.first);
                               print("hewwo");
-                            }
 
+                              LoginForm.u.deleteBooking(LoginForm.u.bookingRecords.first, LoginForm.u.bookingRecords.first.intervals.first);
+                              LoginForm.u.deleteBooking(LoginForm.u.bookingRecords.first, LoginForm.u.bookingRecords.first.intervals.first);
+                            } else {
+                              if (await flag1) {
+                                //get existing user
+                                print(DataBaseService.getData(emailidcontroller.text));
+                                LoginForm.u = await DataBaseService.getData(emailidcontroller.text);
+                                await LoginForm.u.fetchBookingRecord();
+                                print("hello success!");
+                              } else {
+                                LoginForm.u = await User(emailId: emailidcontroller.text, rollNumber: rollnumbercontroller.text, dateRecords: []);
+                                LoginForm.u.addBooking(DateTime(2022, 1, 4), 6, 8);
+                                LoginForm.u.addBooking(DateTime(2022, 1, 4), 9, 10);
+                                await LoginForm.u.update();
+                              }
+                            }
                             Navigator.push(context, MaterialPageRoute(builder: (context) => const TabNavigator()));
                           }
                         },
