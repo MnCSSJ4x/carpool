@@ -6,23 +6,26 @@ import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   Home ({Key? key}) : super(key: key);
+
+  static Homepage homep = Homepage();
   @override
   Homepage createState() {
     print("Createstate called");
-    return Homepage();
+    homep = new Homepage();
+    return homep;
   }
 }
 
 class Homepage extends State<Home>{
   Widget presentwidget = Container(
-      child: Center(
+      child: const Center(
         child: Text(
           "You have no bookings available for the selected date.",
           style: TextStyle(color: Colors.white, fontFamily: 'Helvetica'),
         ),
       )
   );
-  List<a.Interval>? userintervals;
+  List<a.Interval> userintervals = [];
 
   @override
   Widget build(BuildContext context) {
@@ -36,23 +39,24 @@ class Homepage extends State<Home>{
   }
 
   void bookings() {
-      if(userintervals!=null) {
+    setState(() {
+          if(userintervals.length != 0) {
         print(0);
         presentwidget = Container(
           child: ListView.builder(
-            itemCount: userintervals!.length,
+            itemCount: userintervals.length,
             itemBuilder: (BuildContext context, int index) {
               //print(LoginForm.u.present);
-              String starttime = userintervals![index].start.toString() + ":00";
-              String endtime = userintervals![index].end.toString() + ":00";
+              String starttime = userintervals[index].start.toString() + ":00";
+              String endtime = userintervals[index].end.toString() + ":00";
               return ListTile(
-                leading: Icon(
+                leading: const Icon(
                   Icons.car_rental,
                   color: Colors.white,
                 ),
                 title: Text(
-                  "Booking Time: $starttime to $endtime",
-                  style: TextStyle(color: Colors.white),
+                        "Booking Time: $starttime to $endtime",
+                  style: const TextStyle(color: Colors.white),
                 ),
                 tileColor: Colors.red,
               );
@@ -63,7 +67,7 @@ class Homepage extends State<Home>{
       else{
         print(1);
         presentwidget = Container(
-            child: Center(
+            child: const Center(
               child: Text(
                 "You have no bookings available for the selected date.",
                 style: TextStyle(color: Colors.white, fontFamily: 'Helvetica'),
@@ -71,19 +75,29 @@ class Homepage extends State<Home>{
             )
         );
       }
-    ;
+    });
   }
 
 
   void setbookings() async{
     print("setbookings called");
+    bool flag = false;
     List<BookingRecord> temp = LoginForm.u.bookingRecords;
     var newFormat = DateFormat("yyyy-MM-dd");
     String dt = newFormat.format(LoginForm.u.present!);
     for(int i=0; i<temp.length; i++) {
       if(dt==temp[i].date){
-        userintervals = temp[i].intervals;
+        print("bookings found");
+        for(int j=0; j<temp[i].intervals.length; j++) {
+          userintervals.add(temp[i].intervals[j]);
+        }
+        flag = true;
+        print(userintervals.length);
       }
+    }
+    if(!flag){
+      print("karan");
+      userintervals.clear();
     }
     bookings();
   }
