@@ -44,21 +44,34 @@ class Homepage extends State<Home>{
         print(0);
         presentwidget = Container(
           child: ListView.builder(
+            padding:const EdgeInsets.all(10), 
             itemCount: userintervals.length,
             itemBuilder: (BuildContext context, int index) {
               //print(LoginForm.u.present);
               String starttime = userintervals[index].start.toString() + ":00";
               String endtime = userintervals[index].end.toString() + ":00";
-              return ListTile(
-                leading: const Icon(
-                  Icons.car_rental,
-                  color: Colors.white,
+              
+              return Container(
+                margin: const EdgeInsets.all(10),
+                child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                    leading: const Icon(
+                      Icons.car_rental,
+                      color: Colors.white,
+                    ),
+                    title: Text(
+                      "Booking Time: $starttime to $endtime",
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    tileColor: Colors.teal,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
-                title: Text(
-                        "Booking Time: $starttime to $endtime",
-                  style: const TextStyle(color: Colors.white),
-                ),
-                tileColor: Colors.red,
               );
             },
           ),
