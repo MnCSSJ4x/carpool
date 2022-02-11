@@ -1,14 +1,65 @@
 import 'package:flutter/material.dart';
 
 class BookingDetails extends StatelessWidget{
-  BookingDetails(this.date, this.starttime, this.endtime, {Key? key}) : super(key: key);
+  late List<Widget> widgetlist;
+
+  BookingDetails(this.date, this.starttime, this.endtime, {Key? key}) : super(key: key){
+    widgetlist = [
+      const ListTile(
+        title: Center(
+          child: Text(
+            "Details",
+            style: TextStyle(color: Colors.blue, fontFamily: 'Helvetica', fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+        ),
+        tileColor: Colors.black,
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.calendar_today_sharp,
+          color: Colors.blue,
+          size: 22,
+        ),
+        title: Text(
+          "Date: $date",
+          style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+        ),
+        tileColor: Colors.black,
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.lock_clock,
+          color: Colors.blue,
+          size: 22,
+        ),
+        title: Text(
+          "Time Slot: $starttime Hours to $endtime Hours",
+          style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+        ),
+        tileColor: Colors.black,
+      ),
+      const ListTile(
+        title: Center(
+          child: Text(
+            "Available Carpools",
+            style: TextStyle(color: Colors.blue, fontFamily: 'Helvetica', fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+        ),
+        tileColor: Colors.black,
+      ),
+    ];
+    }
+
   final String date;
   final String starttime;
   final String endtime;
-  List<String> carpools = ["Ishaan Jalan", "Rudransh Dixit", "hewwo", "manda", "ramesh", "mukesh", "sukesh", "nilesh"]  ;
-  
+  List<String> carpools = ["Ishaan Jalan", "Rudransh Dixit", "hewwo", "manda", "ramesh", "mukesh", "sukesh", "nilesh"];
+
+
+
   @override
   Widget build(BuildContext context) {
+    avlblcarpools();
     return Scaffold(
       appBar: AppBar(
           title: Column(
@@ -62,70 +113,24 @@ class BookingDetails extends StatelessWidget{
           color: Colors.white,
         )
       ),
-     body: ListView(
+     body: Scrollbar(
+       child: ListView(
        scrollDirection: Axis.vertical,
        shrinkWrap: true,
        padding: EdgeInsets.all(5),
-       children: <Widget>[
-           const ListTile(
-            title: Center(
-              child: Text(
-              "Details",
-              style: TextStyle(color: Colors.blue, fontFamily: 'Helvetica', fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            ),
-           tileColor: Colors.black,
-           ),
-         ListTile(
-           leading: const Icon(
-             Icons.calendar_today_sharp,
-             color: Colors.blue,
-             size: 22,
-           ),
-           title: Text(
-               "Date: $date",
-               style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
-             ),
-           tileColor: Colors.black,
-         ),
-         ListTile(
-           leading: const Icon(
-             Icons.lock_clock,
-             color: Colors.blue,
-             size: 22,
-           ),
-           title: Text(
-             "Time Slot: $starttime Hours to $endtime Hours",
-             style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
-           ),
-           tileColor: Colors.black,
-         ),
-         const ListTile(
-           title: Center(
-             child: Text(
-               "Available Carpools",
-               style: TextStyle(color: Colors.blue, fontFamily: 'Helvetica', fontSize: 22, fontWeight: FontWeight.bold),
-             ),
-           ),
-           tileColor: Colors.black,
-         ),
-         avlblcarpools(),
-       ],
+       children: widgetlist,
      ),
+    ),
     );
   }
 
-  Widget avlblcarpools(){
-    Widget temp;
+  void avlblcarpools(){
     if(carpools.length!=0){
-      temp = ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        padding:const EdgeInsets.all(5),
-        itemCount: carpools.length,
-        itemBuilder: (BuildContext context, int index) {
-        String name = carpools[index];
-           return ListTile(
+      for(int i=0; i<carpools.length; i++){
+
+        String name = carpools[i];
+           widgetlist.add(
+                ListTile(
                 leading: const Icon(
                   Icons.person,
                   color: Colors.blue,
@@ -139,21 +144,22 @@ class BookingDetails extends StatelessWidget{
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-              );
-        },
-      );
+              ),
+           );
+        }
     }
     else{
-      temp = const ListTile(
-        title: Center(
-          child: Text(
+      widgetlist.add(
+          const ListTile(
+           title: Center(
+            child: Text(
             "Sorry, there are no carpools available in your time slot",
             style: TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
           ),
         ),
         tileColor: Colors.black,
+      ),
       );
     }
-    return temp;
   }
 }
