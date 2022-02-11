@@ -14,6 +14,7 @@ class TabNavigator extends StatefulWidget {
 
 class Landing extends State<TabNavigator>{
   int state = 0;
+  
   PageController pageController = PageController(initialPage: 0);
 
   @override
@@ -120,6 +121,8 @@ class Landing extends State<TabNavigator>{
         firstDate: DateTime(1960),
         lastDate: DateTime(2060),
       );
+      // homepage.createState().setbookings();
+      Home.homep.setbookings();
     }
     else{
       LoginForm.u.selected = await showDatePicker(
@@ -129,6 +132,7 @@ class Landing extends State<TabNavigator>{
         lastDate: DateTime(2060),
       );
     }
+    
   }
 
   String appcaption(){
