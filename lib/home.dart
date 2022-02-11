@@ -39,7 +39,7 @@ class Homepage extends State<Home>{
         return SimpleDialog(
           backgroundColor: Color(0xFF212121),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(14),
           ),
           title: const Text(
             "Information about the booking",
