@@ -20,7 +20,13 @@ class Home extends StatefulWidget {
 enum Options { Remove, ShowDetails }
 
 class Homepage extends State<Home> {
-  late Widget presentwidget;
+  Widget presentwidget = Container(
+      child: const Center(
+    child: Text(
+      "You have no bookings available for the selected date.",
+      style: TextStyle(color: Colors.white, fontFamily: 'Helvetica'),
+    ),
+  ));
 
   // List<a.Interval> userintervals = [];
 
@@ -28,7 +34,10 @@ class Homepage extends State<Home> {
   late BookingRecord? curBookingRecord;
   late int curIntervalIndex;
 
+  bool didOpenDialog = false;
+
   Future<void> OpenDialog() async {
+    didOpenDialog = true;
     switch (await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -84,22 +93,26 @@ class Homepage extends State<Home> {
         })) {
       case Options.ShowDetails:
         // Let's go.
-        Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetails("11-02-2022", "2:00", "3:00")));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetails("11-02-2022", "2:00", "3:00", br: curBookingRecord)));
         // TODO: connect with backend
         print("show details clicked");
         break;
       case Options.Remove:
         //remove stuff from databse
         //call build ui
+        if (curIntervalIndex != -1) {
+          LoginForm.u.deleteBooking(curBookingRecord!, curBookingRecord!.intervals[curIntervalIndex]);
+        }
 
         print("remove clicked");
         break;
     }
+    curIntervalIndex = -1;
   }
 
   @override
   Widget build(BuildContext context) {
-    //bookings();
+    setbookings();
     return Scaffold(backgroundColor: Colors.black, body: presentwidget);
   }
 
@@ -138,7 +151,8 @@ class Homepage extends State<Home> {
                         ),
                         trailing: IconButton(
                             onPressed: () {
-                              OpenDialog();
+                              curIntervalIndex = index;
+                              OpenDialog().then((value) => bookings());
                             },
                             icon: const Icon(
                               Icons.more_vert,
@@ -166,10 +180,18 @@ class Homepage extends State<Home> {
   void setbookings() async {
     print("setbookings called");
     var newFormat = DateFormat("yyyy-MM-dd");
-    String dt = newFormat.format(LoginForm.u.present!);
+    String dt = "";
+    if (LoginForm.u.present != null) dt = newFormat.format(LoginForm.u.present!);
+
     curBookingRecord = null;
     curIntervalIndex = -1;
     curUser = LoginForm.u;
+
+    // I have preset Date, there might be booking on that day or not
+    // User -> BookingRecord
+    // if (curBookingRecord is null) means that day has no record
+
+    curBookingRecord = curUser.bookingRecordExists(dt);
     bookings();
   }
 }

@@ -80,6 +80,19 @@ class User {
     // TODO: then fetch all the bookingRecord for the person (Only upcoming ones)
   }
 
+  BookingRecord? bookingRecordExists(String dt) {
+    if (dateRecords.contains(DateTime.parse(dt))) {
+      if (bookingRecords.contains(BookingRecord(emailId, dt))) {
+        for (var element in bookingRecords) {
+          if (element.uid == emailId && element.date == dt) {
+            return element;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   void addBooking(DateTime date, int startHour, int endHour) {
     // TODO: make a new booking record, add it to the bookingRecords.
     var newFormat = DateFormat("yyyy-MM-dd");
