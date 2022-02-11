@@ -59,6 +59,7 @@ class User {
   late List<DateTime> dateRecords; // All the records based on date of the user only
   late List<BookingRecord> bookingRecords; // All the booking record
   //Map travelTime = <DateTime, IntervalTree>{};
+  DateTime? present, selected;
 
   void addUserToDatabase(String emailId, rollNumber) {
     this.emailId = emailId;

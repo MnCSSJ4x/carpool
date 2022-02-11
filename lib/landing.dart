@@ -1,63 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:carpool/home.dart';
 import 'package:carpool/newbooking.dart';
+import 'package:carpool/LoginForm.dart';
 
 class TabNavigator extends StatefulWidget {
   const TabNavigator ({Key? key}) : super(key: key);
 
   @override
-  Landing createState() => Landing();
+  Landing createState(){
+    return Landing();
+  }
 }
 
 class Landing extends State<TabNavigator>{
   int state = 0;
-  DateTime? present, selected;
   PageController pageController = PageController(initialPage: 0);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "ShareCab",
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
-              ),
-              Text(
-                appcaption(),
-                style: const TextStyle(color: Colors.white, fontSize: 14.0),
-              )
-            ],
-          ),
-
-          leading: const Padding(
-            padding: EdgeInsets.all(5.0),
-            child: CircleAvatar(
-              backgroundImage: AssetImage('assets/logo.png'),
-              backgroundColor: Colors.black,
-            ),
-          ),
-          backgroundColor: Colors.black,
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(
-                Icons.date_range,
-                color: Colors.blue,
-              ),
-              onPressed: () {
-                _showCalendar(context);
-              },
-            ),
-          ],
-          shape: const Border(
-          bottom: BorderSide(
-            color: Color(0xFF424242),
-          )
-      ),
-      ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           border: Border(
@@ -107,35 +68,5 @@ class Landing extends State<TabNavigator>{
       backgroundColor: Colors.black,
 
       );
-  }
-
-  _showCalendar(BuildContext context) async {
-    if(state==0) {
-      present = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2060),
-      );
-    }
-    else{
-      selected = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2060),
-      );
-    }
-  }
-
-  String appcaption(){
-    String a;
-    if(state==0){
-      a = "Your bookings";
-    }
-    else{
-      a = "Add a New Booking";
-    }
-    return a;
   }
 }
