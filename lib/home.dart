@@ -41,10 +41,12 @@ class Homepage extends State<Home>{
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
-          title: const Text(
-            "Information about the booking",
+          title: const Center(
+            child: Text(
+            "Booking Options",
             style: TextStyle(color: Colors.white, fontSize: 18),
             ),
+          ),
           children: <Widget>[
             SimpleDialogOption(
               onPressed: (){Navigator.pop(context,Options.ShowDetails);},
@@ -85,7 +87,7 @@ class Homepage extends State<Home>{
     {
       case Options.ShowDetails:
       // Let's go.
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const BookingDetails("11-02-2022", "2:00", "3:00")));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetails("11-02-2022", "2:00", "3:00")));
       print("show details clicked");
       break;
       case Options.Remove:
