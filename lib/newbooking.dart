@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:carpool/LoginForm.dart';
+import 'package:carpool/user.dart';
 
+class Booking extends StatefulWidget{
 
-class newBookings extends StatelessWidget {
-  newBookings({Key? key}) : super(key: key);
+  static newBookings newpage = newBookings();
 
+  @override
+  newBookings createState() {
+    newpage = new newBookings();
+    return newpage;
+  }
+
+}
+
+class newBookings extends State<Booking>{
+
+  late String date;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
     );
   }
-  _showCalendar(BuildContext context) async {
-      LoginForm.u.selected = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1960),
-        lastDate: DateTime(2060),
-      );
-  }
+
 
 }

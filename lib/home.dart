@@ -34,6 +34,8 @@ class Homepage extends State<Home> {
   late BookingRecord? curBookingRecord;
   late int curIntervalIndex;
 
+  List<Widget> widgetlist = [];
+
   bool didOpenDialog = false;
 
   Future<void> OpenDialog() async {
@@ -117,21 +119,43 @@ class Homepage extends State<Home> {
   }
 
   void bookings() {
+    String dt;
+    var newFormat = DateFormat("yyyy-MM-dd");
+    dt = newFormat.format(LoginForm.u.present!);
     setState(() {
       if (curBookingRecord != null) {
         if (curBookingRecord!.intervals.isNotEmpty) {
           print(0);
-          presentwidget = Container(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(10),
-              itemCount: curBookingRecord!.intervals.length,
-              itemBuilder: (BuildContext context, int index) {
-                //print(LoginForm.u.present);
-                String starttime = curBookingRecord!.intervals[index].start.toString() + ":00";
-                String endtime = curBookingRecord!.intervals[index].end.toString() + ":00";
+          widgetlist = [
+            const SizedBox(
+              height: 10,
+            ),
+            Center(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      const WidgetSpan(
+                        child: Icon(Icons.lock_clock, size: 22, color: Colors.blue),
+                      ),
+                      TextSpan(
+                        text: " $dt",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                    ],
+                  ),
+                )
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+          ];
 
-                return Container(
-                  margin: const EdgeInsets.all(10),
+          for(int i=0; i<curBookingRecord!.intervals.length ; i++){
+            String starttime = curBookingRecord!.intervals[i].start.toString() + ":00";
+            String endtime = curBookingRecord!.intervals[i].end.toString() + ":00";
+            widgetlist.add(
+                Container(
+                  margin: const EdgeInsets.all(5),
                   child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -145,13 +169,13 @@ class Homepage extends State<Home> {
                           "Booking Time: $starttime to $endtime",
                           style: const TextStyle(color: Colors.white),
                         ),
-                        tileColor: Colors.teal,
+                        tileColor: Colors.blue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         trailing: IconButton(
                             onPressed: () {
-                              curIntervalIndex = index;
+                              curIntervalIndex = i;
                               OpenDialog().then((value) => bookings());
                             },
                             icon: const Icon(
@@ -159,23 +183,57 @@ class Homepage extends State<Home> {
                               color: Colors.white,
                             ))),
                   ),
-                );
-              },
-            ),
-          );
-        } else {
+                )
+            );
+          }
+          presentwidget = Scrollbar(
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                children: widgetlist,
+              ));
+        }
+      } else {
           print(1);
-          presentwidget = Container(
-              child: const Center(
-            child: Text(
-              "You have no bookings available for the selected date.",
-              style: TextStyle(color: Colors.white, fontFamily: 'Helvetica'),
+          widgetlist = [
+            const SizedBox(
+              height: 10,
             ),
+            Center(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      const WidgetSpan(
+                        child: Icon(Icons.lock_clock, size: 22, color: Colors.blue),
+                      ),
+                      TextSpan(
+                        text: " $dt",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                    ],
+                  ),
+                )
+            ),
+            const SizedBox(
+              height: 220,
+            ),
+            const Center(
+              child: Text(
+                "You have no bookings available for the selected date.",
+                style: TextStyle(color: Colors.white, fontFamily: 'Helvetica'),
+              ),
+            ),
+          ];
+
+          presentwidget = Scrollbar(
+              child: ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  children: widgetlist,
           ));
         }
-      }
-    });
-  }
+      });
+    }
 
   void setbookings() async {
     print("setbookings called");

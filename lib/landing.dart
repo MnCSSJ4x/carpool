@@ -106,7 +106,7 @@ class Landing extends State<TabNavigator>{
         },
         children: [
           Home(),
-          newBookings(),
+          Booking(),
         ],
       ),
       backgroundColor: Colors.black,
