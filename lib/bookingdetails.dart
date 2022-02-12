@@ -1,20 +1,19 @@
+import 'package:carpool/user.dart';
 import 'package:flutter/material.dart';
+
+import 'LoginForm.dart';
 
 class BookingDetails extends StatelessWidget {
   late List<Widget> widgetlist;
 
-  BookingDetails(this.date, this.starttime, this.endtime, {Key? key})
-      : super(key: key) {
+  BookingDetails(this.date, this.starttime, this.endtime, {Key? key, BookingRecord? br}) : super(key: key) {
+    brs = LoginForm.u.getBookingMatching(br!);
     widgetlist = [
       const ListTile(
         title: Center(
           child: Text(
             "Details",
-            style: TextStyle(
-                color: Colors.blue,
-                fontFamily: 'Helvetica',
-                fontSize: 22,
-                fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.blue, fontFamily: 'Helvetica', fontSize: 22, fontWeight: FontWeight.bold),
           ),
         ),
         tileColor: Colors.black,
@@ -27,8 +26,7 @@ class BookingDetails extends StatelessWidget {
         ),
         title: Text(
           "Date: $date",
-          style: const TextStyle(
-              color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+          style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
         ),
         tileColor: Colors.black,
       ),
@@ -40,8 +38,7 @@ class BookingDetails extends StatelessWidget {
         ),
         title: Text(
           "Time Slot: $starttime Hours to $endtime Hours",
-          style: const TextStyle(
-              color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+          style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
         ),
         tileColor: Colors.black,
       ),
@@ -49,11 +46,7 @@ class BookingDetails extends StatelessWidget {
         title: Center(
           child: Text(
             "Available Carpools",
-            style: TextStyle(
-                color: Colors.blue,
-                fontFamily: 'Helvetica',
-                fontSize: 22,
-                fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.blue, fontFamily: 'Helvetica', fontSize: 22, fontWeight: FontWeight.bold),
           ),
         ),
         tileColor: Colors.black,
@@ -64,16 +57,10 @@ class BookingDetails extends StatelessWidget {
   final String date;
   final String starttime;
   final String endtime;
-  List<String> carpools = [
-    "Ishaan Jalan",
-    "Rudransh Dixit",
-    "hewwo",
-    "manda",
-    "ramesh",
-    "mukesh",
-    "sukesh",
-    "nilesh"
-  ];
+  late Future<List<BookingRecord>> brs;
+  // late List<BookingRecord> brs;
+  List<String> carpools = ["Ishaan Jalan", "Rudransh Dixit", "hewwo", "manda", "ramesh", "mukesh", "sukesh", "nilesh"];
+  // TODO: add getBookingData..
 
   @override
   Widget build(BuildContext context) {
@@ -149,6 +136,7 @@ class BookingDetails extends StatelessWidget {
                         //DB deletion strategy same as home.dart
                         Navigator.pop(context);
                         Navigator.pop(context);
+                        // TODO: add delete
                       }, // function used to perform after pressing the button
                       child: const Text(
                         'YES',
@@ -185,10 +173,11 @@ class BookingDetails extends StatelessWidget {
     );
   }
 
-  void avlblcarpools() {
+  Future<void> avlblcarpools() async {
     if (carpools.length != 0) {
-      for (int i = 0; i < carpools.length; i++) {
-        String name = carpools[i];
+      List<BookingRecord> value = await brs;
+      for (int i = 0; i < value.length; i++) {
+        String name = value[i].uid;
         widgetlist.add(
           ListTile(
             leading: const Icon(
@@ -198,8 +187,7 @@ class BookingDetails extends StatelessWidget {
             ),
             title: Text(
               name,
-              style: const TextStyle(
-                  color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+              style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
             ),
             tileColor: Colors.black,
             shape: RoundedRectangleBorder(
@@ -208,14 +196,33 @@ class BookingDetails extends StatelessWidget {
           ),
         );
       }
+      // for (int i = 0; i < carpools.length; i++) {
+      //   String name = carpools[i];
+      //   widgetlist.add(
+      //     ListTile(
+      //       leading: const Icon(
+      //         Icons.person,
+      //         color: Colors.blue,
+      //         size: 22,
+      //       ),
+      //       title: Text(
+      //         name,
+      //         style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+      //       ),
+      //       tileColor: Colors.black,
+      //       shape: RoundedRectangleBorder(
+      //         borderRadius: BorderRadius.circular(12),
+      //       ),
+      //     ),
+      //   );
+      // }
     } else {
       widgetlist.add(
         const ListTile(
           title: Center(
             child: Text(
               "Sorry, there are no carpools available in your time slot",
-              style: TextStyle(
-                  color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+              style: TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
             ),
           ),
           tileColor: Colors.black,

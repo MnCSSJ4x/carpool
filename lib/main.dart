@@ -1,4 +1,5 @@
 import 'package:carpool/landing.dart';
+import 'package:carpool/user.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'LoginForm.dart';
@@ -40,6 +41,11 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    LoginForm.u = User(rollNumber: "IMT2020056", emailId: "Rudransh.Dixit@iiitb.ac.in", dateRecords: []);
+    LoginForm.u.addBooking(DateTime(2022, 1, 4), 3, 5);
+    LoginForm.u.addBooking(DateTime(2022, 1, 4), 6, 9);
+    LoginForm.u.update();
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
