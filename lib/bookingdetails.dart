@@ -1,13 +1,26 @@
+import 'package:carpool/home.dart';
 import 'package:carpool/user.dart';
 import 'package:flutter/material.dart';
+import 'package:interval_tree/interval_tree.dart' as iv;
 
 import 'LoginForm.dart';
 
-class BookingDetails extends StatelessWidget {
+class BookingDetails extends StatefulWidget {
   late List<Widget> widgetlist;
 
-  BookingDetails(this.date, this.starttime, this.endtime, {Key? key, BookingRecord? br}) : super(key: key) {
-    brs = LoginForm.u.getBookingMatching(br!);
+  BookingDetails(
+    this.date,
+    this.starttime,
+    this.endtime,
+    this.curIntervalIndex,
+    BookingRecord? this.br, {
+    Key? key,
+  }) : super(key: key) {
+    if (br == null) {
+      brs = LoginForm.u!.getBookingMatching(BookingRecord(LoginForm.u!.emailId, date), null);
+    } else {
+      brs = LoginForm.u!.getBookingMatching(br!, br!.intervals[curIntervalIndex]);
+    }
     widgetlist = [
       const ListTile(
         title: Center(
@@ -57,14 +70,21 @@ class BookingDetails extends StatelessWidget {
   final String date;
   final String starttime;
   final String endtime;
-  late Future<List<BookingRecord>> brs;
-  // late List<BookingRecord> brs;
-  List<String> carpools = ["Ishaan Jalan", "Rudransh Dixit", "hewwo", "manda", "ramesh", "mukesh", "sukesh", "nilesh"];
-  // TODO: add getBookingData..
+  late Future<List<BookingRecord>?> brs;
+  int curIntervalIndex;
+  BookingRecord? br;
 
   @override
+  State<BookingDetails> createState() => _BookingDetailsState();
+}
+
+class _BookingDetailsState extends State<BookingDetails> {
+  // late List<BookingRecord> brs;
+  List<String> carpools = ["Ishaan Jalan", "Rudransh Dixit", "hewwo", "manda", "ramesh", "mukesh", "sukesh", "nilesh"];
+
+  // TODO: add getBookingData..
+  @override
   Widget build(BuildContext context) {
-    avlblcarpools();
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -113,46 +133,54 @@ class BookingDetails extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AlertDialog(
-                  backgroundColor: Color(0xFF212121),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                builder: (context) => Scaffold(
+                  backgroundColor: Colors.black,
+                  body: AlertDialog(
+                    backgroundColor: Color(0xFF212121),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    title: const Center(
+                      child: Text(
+                        'Cancel Booking',
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ), // To display the title it is optional
+                    content: const Text(
+                      'Are you sure you want to cancel the booking?',
+                      style: TextStyle(color: Colors.white),
+                    ), // Message which will be pop up on the screen
+                    // Action widget which will provide the user to acknowledge the choice
+                    actions: [
+                      TextButton(
+                        // FlatButton widget is used to make a text to work like a button
+                        onPressed: () {
+                          //DB deletion strategy same as home.dart
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          // TODO: add delete
+                          if (widget.curIntervalIndex != -1 && widget.br != null) {
+                            LoginForm.u!.deleteBooking(widget.br!, widget.br!.intervals[widget.curIntervalIndex]);
+                          }
+                          widget.curIntervalIndex = -1;
+                          Home.homep.bookings();
+                        }, // function used to perform after pressing the button
+                        child: const Text(
+                          'YES',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          'NO',
+                          style: TextStyle(color: Colors.green),
+                        ),
+                      ),
+                    ],
                   ),
-                  title: const Center(
-                    child: Text(
-                      'Cancel Booking',
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                  ), // To display the title it is optional
-                  content: const Text(
-                    'Are you sure you want to cancel the booking?',
-                    style: TextStyle(color: Colors.white),
-                  ), // Message which will be pop up on the screen
-                  // Action widget which will provide the user to acknowledge the choice
-                  actions: [
-                    TextButton(
-                      // FlatButton widget is used to make a text to work like a button
-                      onPressed: () {
-                        //DB deletion strategy same as home.dart
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                        // TODO: add delete
-                      }, // function used to perform after pressing the button
-                      child: const Text(
-                        'YES',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'NO',
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             );
@@ -162,23 +190,44 @@ class BookingDetails extends StatelessWidget {
             Icons.delete,
             color: Colors.white,
           )),
-      body: Scrollbar(
-        child: ListView(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          padding: EdgeInsets.all(5),
-          children: widgetlist,
-        ),
-      ),
+      body: FutureBuilder<bool>(
+          future: avlblcarpools(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.hasData) {
+              List<Widget> children = widget.widgetlist;
+              return Scrollbar(
+                child: ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  padding: EdgeInsets.all(5),
+                  children: widget.widgetlist,
+                ),
+              );
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
+      // body: Scrollbar(
+      //   child: ListView(
+      //     scrollDirection: Axis.vertical,
+      //     shrinkWrap: true,
+      //     padding: EdgeInsets.all(5),
+      //     children: widget.widgetlist,
+      //   ),
+      // ),
     );
   }
 
-  Future<void> avlblcarpools() async {
-    if (carpools.length != 0) {
-      List<BookingRecord> value = await brs;
+  Future<bool> avlblcarpools() async {
+    bool temp = false;
+    List<BookingRecord>? value = await widget.brs;
+    if (value != null) {
       for (int i = 0; i < value.length; i++) {
+        temp = true;
         String name = value[i].uid;
-        widgetlist.add(
+        widget.widgetlist.add(
           ListTile(
             leading: const Icon(
               Icons.person,
@@ -216,8 +265,22 @@ class BookingDetails extends StatelessWidget {
       //     ),
       //   );
       // }
+      if (value.isEmpty) {
+        temp = false;
+        widget.widgetlist.add(
+          const ListTile(
+            title: Center(
+              child: Text(
+                "Sorry, there are no carpools available in your time slot",
+                style: TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+              ),
+            ),
+            tileColor: Colors.black,
+          ),
+        );
+      }
     } else {
-      widgetlist.add(
+      widget.widgetlist.add(
         const ListTile(
           title: Center(
             child: Text(
@@ -229,5 +292,6 @@ class BookingDetails extends StatelessWidget {
         ),
       );
     }
+    return temp;
   }
 }

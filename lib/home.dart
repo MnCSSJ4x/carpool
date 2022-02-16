@@ -5,13 +5,14 @@ import 'package:interval_tree/interval_tree.dart' as a;
 import 'package:intl/intl.dart';
 import 'package:carpool/bookingdetails.dart';
 
+import 'database.dart';
+
 class Home extends StatefulWidget {
   Home({Key? key}) : super(key: key);
 
   static Homepage homep = Homepage();
   @override
   Homepage createState() {
-    print("Createstate called");
     homep = new Homepage();
     return homep;
   }
@@ -29,10 +30,12 @@ class Homepage extends State<Home> {
   ));
 
   // List<a.Interval> userintervals = [];
-
-  User curUser = LoginForm.u;
+  late User? curUser;
   late BookingRecord? curBookingRecord;
   late int curIntervalIndex;
+  String date = "";
+  String starttime = "";
+  String endtime = "";
 
   List<Widget> widgetlist = [];
 
@@ -57,6 +60,13 @@ class Homepage extends State<Home> {
             children: <Widget>[
               SimpleDialogOption(
                 onPressed: () {
+                  starttime = curBookingRecord!
+                          .intervals[curIntervalIndex].start
+                          .toString() +
+                      ":00";
+                  endtime = curBookingRecord!.intervals[curIntervalIndex].end
+                          .toString() +
+                      ":00";
                   Navigator.pop(context, Options.ShowDetails);
                 },
                 child: const ListTile(
@@ -95,161 +105,191 @@ class Homepage extends State<Home> {
         })) {
       case Options.ShowDetails:
         // Let's go.
-        Navigator.push(context, MaterialPageRoute(builder: (context) => BookingDetails("11-02-2022", "2:00", "3:00", br: curBookingRecord)));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BookingDetails(date, starttime, endtime,
+                    curIntervalIndex, curBookingRecord)));
         // TODO: connect with backend
-        print("show details clicked");
         break;
       case Options.Remove:
         //remove stuff from databse
         //call build ui
         if (curIntervalIndex != -1) {
-          LoginForm.u.deleteBooking(curBookingRecord!, curBookingRecord!.intervals[curIntervalIndex]);
+          LoginForm.u!.deleteBooking(
+              curBookingRecord!, curBookingRecord!.intervals[curIntervalIndex]);
         }
+        curIntervalIndex = -1;
 
-        print("remove clicked");
         break;
     }
-    curIntervalIndex = -1;
   }
 
   @override
   Widget build(BuildContext context) {
-    setbookings();
-    return Scaffold(backgroundColor: Colors.black, body: presentwidget);
+    // setbookings();
+    return Scaffold(
+        backgroundColor: Colors.black,
+        body: FutureBuilder<bool>(
+            future: setbookings(),
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+              if (snapshot.hasData) {
+                return presentwidget;
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            }));
   }
 
-  void bookings() {
-    String dt;
+  bool bookings() {
+    late double height, width;
+    if (MediaQuery.maybeOf(context) != null) {
+      height = MediaQuery.maybeOf(context)!.size.height;
+    }
+    if (MediaQuery.maybeOf(context) != null) {
+      width = MediaQuery.maybeOf(context)!.size.width;
+    }
+    bool temp = false;
+    String dt = " ";
     var newFormat = DateFormat("yyyy-MM-dd");
-    dt = newFormat.format(LoginForm.u.present!);
+    if (LoginForm.u!.present != null)
+      dt = newFormat.format(LoginForm.u!.present!);
     setState(() {
       if (curBookingRecord != null) {
         if (curBookingRecord!.intervals.isNotEmpty) {
-          print(0);
+          temp = true;
           widgetlist = [
-            const SizedBox(
-              height: 10,
+            SizedBox(
+              height: 0.02 * height,
             ),
             Center(
                 child: RichText(
-                  text: TextSpan(
-                    children: [
-                      const WidgetSpan(
-                        child: Icon(Icons.lock_clock, size: 22, color: Colors.blue),
-                      ),
-                      TextSpan(
-                        text: " $dt",
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      ),
-                    ],
+              text: TextSpan(
+                children: [
+                  const WidgetSpan(
+                    child: Icon(Icons.calendar_today_rounded,
+                        size: 22, color: Colors.blue),
                   ),
-                )
-            ),
-            const SizedBox(
-              height: 15,
+                  TextSpan(
+                    text: " $dt",
+                    style: TextStyle(color: Colors.white, fontSize: 15),
+                  ),
+                ],
+              ),
+            )),
+            SizedBox(
+              height: 0.03 * height,
             ),
           ];
 
-          for(int i=0; i<curBookingRecord!.intervals.length ; i++){
-            String starttime = curBookingRecord!.intervals[i].start.toString() + ":00";
-            String endtime = curBookingRecord!.intervals[i].end.toString() + ":00";
-            widgetlist.add(
-                Container(
-                  margin: const EdgeInsets.all(5),
-                  child: Card(
+          for (int i = 0; i < curBookingRecord!.intervals.length; i++) {
+            String starttime =
+                curBookingRecord!.intervals[i].start.toString() + ":00";
+            String endtime =
+                curBookingRecord!.intervals[i].end.toString() + ":00";
+            widgetlist.add(Container(
+              margin: const EdgeInsets.all(5),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ListTile(
+                    leading: const Icon(
+                      Icons.car_rental,
+                      color: Colors.white,
+                    ),
+                    title: Text(
+                      "Booking Time: $starttime to $endtime",
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    tileColor: Colors.blue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: ListTile(
-                        leading: const Icon(
-                          Icons.car_rental,
+                    trailing: IconButton(
+                        onPressed: () {
+                          curIntervalIndex = i;
+                          OpenDialog().then((value) => bookings());
+                        },
+                        icon: const Icon(
+                          Icons.more_vert,
                           color: Colors.white,
-                        ),
-                        title: Text(
-                          "Booking Time: $starttime to $endtime",
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        tileColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        trailing: IconButton(
-                            onPressed: () {
-                              curIntervalIndex = i;
-                              OpenDialog().then((value) => bookings());
-                            },
-                            icon: const Icon(
-                              Icons.more_vert,
-                              color: Colors.white,
-                            ))),
-                  ),
-                )
-            );
+                        ))),
+              ),
+            ));
           }
           presentwidget = Scrollbar(
               child: ListView(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                children: widgetlist,
-              ));
-        }
-      } else {
-          print(1);
-          widgetlist = [
-            const SizedBox(
-              height: 10,
-            ),
-            Center(
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      const WidgetSpan(
-                        child: Icon(Icons.lock_clock, size: 22, color: Colors.blue),
-                      ),
-                      TextSpan(
-                        text: " $dt",
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      ),
-                    ],
-                  ),
-                )
-            ),
-            const SizedBox(
-              height: 220,
-            ),
-            const Center(
-              child: Text(
-                "You have no bookings available for the selected date.",
-                style: TextStyle(color: Colors.white, fontFamily: 'Helvetica'),
-              ),
-            ),
-          ];
-
-          presentwidget = Scrollbar(
-              child: ListView(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  children: widgetlist,
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            children: widgetlist,
           ));
         }
-      });
-    }
+      } else {
+        temp = false;
+        widgetlist = [
+          SizedBox(
+            height: 0.02 * height,
+          ),
+          Center(
+              child: RichText(
+            text: TextSpan(
+              children: [
+                const WidgetSpan(
+                  child: Icon(Icons.calendar_today_rounded,
+                      size: 22, color: Colors.blue),
+                ),
+                TextSpan(
+                  text: " $dt",
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+              ],
+            ),
+          )),
+          SizedBox(
+            height: 0.34 * height,
+          ),
+          const Center(
+            child: Text(
+              "You have no bookings available for the selected date.",
+              style: TextStyle(color: Colors.white, fontFamily: 'Helvetica'),
+            ),
+          ),
+        ];
 
-  void setbookings() async {
-    print("setbookings called");
+        presentwidget = Scrollbar(
+            child: ListView(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+          children: widgetlist,
+        ));
+      }
+    });
+    return temp;
+  }
+
+  Future<bool> setbookings() async {
     var newFormat = DateFormat("yyyy-MM-dd");
     String dt = "";
-    if (LoginForm.u.present != null) dt = newFormat.format(LoginForm.u.present!);
 
     curBookingRecord = null;
     curIntervalIndex = -1;
+
+    if (LoginForm.u == null) {
+      LoginForm.u = await DataBaseService.getData(LoginForm.email!);
+      await LoginForm.u!.fetchBookingRecord();
+    }
     curUser = LoginForm.u;
 
+    if (LoginForm.u!.present != null)
+      dt = newFormat.format(LoginForm.u!.present!);
+    date = dt;
     // I have preset Date, there might be booking on that day or not
     // User -> BookingRecord
     // if (curBookingRecord is null) means that day has no record
 
-    curBookingRecord = curUser.bookingRecordExists(dt);
-    bookings();
+    curBookingRecord = curUser!.bookingRecordExists(dt);
+    bool temp = bookings();
+    return temp;
   }
 }

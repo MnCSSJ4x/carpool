@@ -21,7 +21,8 @@ class LoginForm extends StatelessWidget {
   final String orgid;
   final TextEditingController email_id_controller;
   final TextEditingController roll_num_controller;
-  static late User u;
+  static late User? u;
+  static String? email;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +67,7 @@ class LoginForm extends StatelessWidget {
                         hintStyle: const TextStyle(color: Colors.grey, fontSize: 14, fontFamily: 'Helvetica'),
                         labelStyle: const TextStyle(color: Colors.grey, fontSize: 14, fontFamily: 'Helvetica'),
                         hintText: "Enter Your Email",
-                        labelText: "Email ID",
+                        labelText: "Email ID (@iiitb.ac.in)",
                         filled: true,
                         fillColor: const Color(0xFF424242),
                         contentPadding: const EdgeInsets.all(15),
@@ -105,9 +106,7 @@ class LoginForm extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {
                         if (form_key.currentState!.validate()) {
-                          //add backend
-
-                          print("Validated");
+                          //OTP FUNCTION
                           sendOTP(email_id_controller);
                           Navigator.push(
                               context,
@@ -116,9 +115,7 @@ class LoginForm extends StatelessWidget {
                                         emailidcontroller: email_id_controller,
                                         rollnumbercontroller: roll_num_controller,
                                       )));
-                        } else {
-                          print("not valid");
-                        }
+                        } else {}
                       },
                       child: const Text(
                         "Get OTP",

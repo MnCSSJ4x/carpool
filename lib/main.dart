@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:carpool/landing.dart';
 import 'package:carpool/user.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'LoginForm.dart';
+import 'database.dart';
 import 'landing.dart';
 
 Future<void> main() async {
@@ -39,25 +43,58 @@ class _LoginPageState extends State<LoginPage> {
   final roll_num_controller = TextEditingController();
   static const String orgid = "iiitb.ac.in";
 
+  Widget _body = CircularProgressIndicator();
+
+  bool isLoggedIn = false;
+  String name = "";
+
+  @override
+  void initState() {
+    super.initState();
+    autoLogIn();
+  }
+
+  void autoLogIn() async {
+    SharedPreferences.getInstance().then((value) {
+      final String? emailID = value.getString("emailID");
+      LoginForm.email = emailID;
+      if (emailID != null) {
+        if (emailID!.isNotEmpty) {
+          setState(() => _body = Stack(children: const <Widget>[
+                TabNavigator(),
+              ]));
+          
+          LoginForm.u = null;
+          return;
+        }
+      }
+      setState(() => _body = Stack(
+            children: <Widget>[
+              //TabNavigator(),
+              LoginForm(form_key: form_key, orgid: orgid, email_id_controller: email_id_controller, roll_num_controller: roll_num_controller),
+            ],
+          ));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    LoginForm.u = User(rollNumber: "IMT2020056", emailId: "Rudransh.Dixit@iiitb.ac.in", dateRecords: []);
-    LoginForm.u.addBooking(DateTime(2022, 1, 4), 3, 5);
-    LoginForm.u.addBooking(DateTime(2022, 1, 4), 6, 9);
-    LoginForm.u.update();
+    Scaffold? scaffold = null;
+
+    // if (check) {
+    //   return Scaffold(
+    //     backgroundColor: Colors.black,
+    //     body: Stack(
+    //       children: const <Widget>[
+    //         TabNavigator(),
+    //       ],
+    //     ),
+    //   );
+    // }
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: <Widget>[
-          TabNavigator(),
-          // LoginForm(
-          //     form_key: form_key,
-          //     orgid: orgid,
-          //     email_id_controller: email_id_controller,
-          //     roll_num_controller: roll_num_controller),
-        ],
-      ),
+      body: _body,
     );
   }
 }

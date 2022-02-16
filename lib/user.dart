@@ -1,7 +1,9 @@
 import 'package:firebase_database/firebase_database.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:interval_tree/interval_tree.dart';
 import 'package:intl/intl.dart';
 import 'package:carpool/database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BookingRecord {
   List<Interval> intervals = [];
@@ -61,6 +63,7 @@ class User {
   late List<BookingRecord> bookingRecords; // All the booking record
   //Map travelTime = <DateTime, IntervalTree>{};
   DateTime? present, selected;
+  late bool isfetched;
 
   void addUserToDatabase(String emailId, rollNumber) {
     this.emailId = emailId;
@@ -75,12 +78,15 @@ class User {
     bookingRecords = [];
     present = DateTime.now();
     selected = DateTime.now();
+
+    isfetched = false;
     // TODO: fetch from database the dateRecords which will be stored for a old user
 
     // TODO: then fetch all the bookingRecord for the person (Only upcoming ones)
   }
 
   BookingRecord? bookingRecordExists(String dt) {
+    if (dt == "") return null;
     if (dateRecords.contains(DateTime.parse(dt))) {
       if (bookingRecords.contains(BookingRecord(emailId, dt))) {
         for (var element in bookingRecords) {
@@ -91,6 +97,15 @@ class User {
       }
     }
     return null;
+  }
+
+  bool doesIntervalExist(BookingRecord br, Interval interval) {
+    for (var element in br.intervals) {
+      if (intersects(element, interval)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void addBooking(DateTime date, int startHour, int endHour) {
@@ -112,6 +127,7 @@ class User {
     if (!dateRecords.contains(date)) {
       dateRecords.add(date);
     }
+    update();
     // TODO: add it to apropriate Date Recordfactory User.fromJson(Map<String, dynamic> data) {
   }
 
@@ -143,23 +159,26 @@ class User {
     await update();
   }
 
-  Future<void> fetchBookingRecord() async {
-    dateRecords.forEach((element) async {
+  Future<bool> fetchBookingRecord() async {
+    if (isfetched) return true;
+    await Future.forEach<DateTime>(dateRecords, (element) async {
       var newFormat = DateFormat("yyyy-MM-dd");
       String dt = newFormat.format(element);
-      List<BookingRecord> arr = await DataBaseService.getBookingRecordsbyDate(dt); // lets say we got an array
+      List<BookingRecord>? arr = await DataBaseService.getBookingRecordsbyDate(dt); // lets say we got an array
       bool flag = false;
       late BookingRecord reqRecord;
-      arr.forEach((element) {
+      for (var element in arr!) {
         if (element.uid == emailId) {
           flag = true;
           reqRecord = element;
         }
-      });
+      }
       if (flag) {
         bookingRecords.add(reqRecord);
       }
     });
+    isfetched = true;
+    return true;
   }
 
   Future<void> update() async {
@@ -174,7 +193,7 @@ class User {
     String dt = newFormat.format(date);
     late List<BookingRecord> arr;
     try {
-      arr = await DataBaseService.getBookingRecordsbyDate(dt);
+      arr = (await DataBaseService.getBookingRecordsbyDate(dt))!;
     } catch (e) {
       arr = [];
     }
@@ -214,27 +233,33 @@ class User {
     return json;
   }
 
-  Future<List<BookingRecord>> getBookingMatching(BookingRecord br) async {
-    List<BookingRecord> brs = await DataBaseService.getBookingRecordsbyDate(br.date);
-    brs.remove(br);
+  Future<List<BookingRecord>?> getBookingMatching(BookingRecord? br, Interval? interval) async {
+    if (br == null) return [];
+    if (interval == null) return [];
+    List<BookingRecord>? brs = await DataBaseService.getBookingRecordsbyDate(br.date);
+    if (brs == null) return null;
+    brs!.remove(br);
     List<BookingRecord> ret = [];
-    //br apna hee hai bhai
-    for (var interval in br.intervals) {
-      for (var bookingRecord in brs) {
-        List<Interval> temp = bookingRecord.intervals;
 
-        for (var element in temp) {
-          if (intersects(element, interval)) {
-            // temporary other users booking records
-            BookingRecord temp_br = BookingRecord(bookingRecord.uid, bookingRecord.date);
-            temp_br.addInterval(element.intersection(interval)!);
-            ret.add(temp_br);
-            break;
-          }
+    for (var bookingRecord in brs) {
+      List<Interval> temp = bookingRecord.intervals;
+
+      for (var element in temp) {
+        if (intersects(element, interval) && !ret.contains(bookingRecord)) {
+          // temporary other users booking records
+          BookingRecord temp_br = BookingRecord(bookingRecord.uid, bookingRecord.date);
+          temp_br.addInterval(element.intersection(interval)!);
+          ret.add(temp_br);
+          break;
         }
       }
     }
     return ret;
+  }
+
+  static Future<void> storeUser(String emailID) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("emailID", emailID);
   }
 
   factory User.fromJson(Map<String, dynamic>? data) {
@@ -250,9 +275,9 @@ class User {
   static bool intersects(Interval i1, Interval i2) {
     //i1.endtime  < i2.starttiem provided i1.starttime<i2.starttime
     //i2.endtime < i1.starttime provided i2.starttime<i1.starttime
-    if (i1.end < i2.start && i1.start < i2.start) {
+    if (i1.end <= i2.start && i1.start <= i2.start) {
       return false;
-    } else if (i2.end < i1.start && i1.start > i2.start) {
+    } else if (i2.end <= i1.start && i1.start >= i2.start) {
       return false;
     }
     return true;

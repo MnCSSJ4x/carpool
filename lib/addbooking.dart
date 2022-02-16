@@ -1,20 +1,24 @@
+import 'package:carpool/user.dart';
 import 'package:flutter/material.dart';
+import 'package:interval_tree/interval_tree.dart' as iv;
 
-class addbooking extends StatelessWidget {
+import 'LoginForm.dart';
+
+class AddBooking extends StatefulWidget {
   late List<Widget> widgetlist;
 
-  addbooking(this.date, this.starttime, this.endtime, {Key? key})
-      : super(key: key) {
+  AddBooking(this.date, this.starttime, this.endtime, this.curIntervalIndex, BookingRecord? this.br, {Key? key}) : super(key: key) {
+    if (br != null) {
+      brs = LoginForm.u!.getBookingMatching(br, iv.Interval(int.parse(starttime), int.parse(endtime)));
+    } else {
+      brs = LoginForm.u!.getBookingMatching(BookingRecord(LoginForm.u!.emailId, date), iv.Interval(int.parse(starttime), int.parse(endtime)));
+    }
     widgetlist = [
       const ListTile(
         title: Center(
           child: Text(
             "Details",
-            style: TextStyle(
-                color: Colors.blue,
-                fontFamily: 'Helvetica',
-                fontSize: 22,
-                fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.blue, fontFamily: 'Helvetica', fontSize: 22, fontWeight: FontWeight.bold),
           ),
         ),
         tileColor: Colors.black,
@@ -27,8 +31,7 @@ class addbooking extends StatelessWidget {
         ),
         title: Text(
           "Date: $date",
-          style: const TextStyle(
-              color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+          style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
         ),
         tileColor: Colors.black,
       ),
@@ -40,8 +43,7 @@ class addbooking extends StatelessWidget {
         ),
         title: Text(
           "Time Slot: $starttime Hours to $endtime Hours",
-          style: const TextStyle(
-              color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+          style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
         ),
         tileColor: Colors.black,
       ),
@@ -49,11 +51,7 @@ class addbooking extends StatelessWidget {
         title: Center(
           child: Text(
             "Available Carpools",
-            style: TextStyle(
-                color: Colors.blue,
-                fontFamily: 'Helvetica',
-                fontSize: 22,
-                fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.blue, fontFamily: 'Helvetica', fontSize: 22, fontWeight: FontWeight.bold),
           ),
         ),
         tileColor: Colors.black,
@@ -64,20 +62,21 @@ class addbooking extends StatelessWidget {
   final String date;
   final String starttime;
   final String endtime;
-  List<String> carpools = [
-    "Ishaan Jalan",
-    "Rudransh Dixit",
-    "hewwo",
-    "manda",
-    "ramesh",
-    "mukesh",
-    "sukesh",
-    "nilesh"
-  ];
+  late Future<List<BookingRecord>?> brs;
+  int curIntervalIndex;
+  BookingRecord? br;
 
   @override
+  State<AddBooking> createState() => _AddBookingState();
+}
+
+class _AddBookingState extends State<AddBooking> {
+  // late List<BookingRecord> brs;
+  List<String> carpools = ["Ishaan Jalan", "Rudransh Dixit", "hewwo", "manda", "ramesh", "mukesh", "sukesh", "nilesh"];
+
+  // TODO: add getBookingData..
+  @override
   Widget build(BuildContext context) {
-    avlblcarpools();
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -89,7 +88,7 @@ class addbooking extends StatelessWidget {
               style: TextStyle(color: Colors.white, fontSize: 16.0),
             ),
             Text(
-              "New Booking Details",
+              "Booking Details",
               style: TextStyle(color: Colors.white, fontSize: 14.0),
             )
           ],
@@ -133,12 +132,12 @@ class addbooking extends StatelessWidget {
                   ),
                   title: const Center(
                     child: Text(
-                      'Confirmation',
+                      'New Booking',
                       style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                   ), // To display the title it is optional
                   content: const Text(
-                    'Are you sure you want to book this slot?',
+                    'Are you sure you want to book the slot?',
                     style: TextStyle(color: Colors.white),
                   ), // Message which will be pop up on the screen
                   // Action widget which will provide the user to acknowledge the choice
@@ -146,7 +145,11 @@ class addbooking extends StatelessWidget {
                     TextButton(
                       // FlatButton widget is used to make a text to work like a button
                       onPressed: () {
-                        //DB deletion strategy same as home.dart
+                        //ADD BOOKING DATABASE
+                        LoginForm.u!.addBooking(
+                            DateTime.parse(widget.date), // YYYY-MM-DD
+                            int.parse(widget.starttime),
+                            int.parse(widget.endtime));
                         Navigator.pop(context);
                         Navigator.pop(context);
                       }, // function used to perform after pressing the button
@@ -169,27 +172,41 @@ class addbooking extends StatelessWidget {
               ),
             );
           },
-          backgroundColor: Colors.green[700],
+          backgroundColor: Colors.green,
           child: const Icon(
             Icons.add,
             color: Colors.white,
           )),
-      body: Scrollbar(
-        child: ListView(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          padding: EdgeInsets.all(5),
-          children: widgetlist,
-        ),
-      ),
+      body: FutureBuilder<bool>(
+          future: avlblcarpools(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.hasData) {
+              List<Widget> children = widget.widgetlist;
+              return Scrollbar(
+                child: ListView(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  padding: EdgeInsets.all(5),
+                  children: widget.widgetlist,
+                ),
+              );
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
     );
   }
 
-  void avlblcarpools() {
-    if (carpools.length != 0) {
-      for (int i = 0; i < carpools.length; i++) {
-        String name = carpools[i];
-        widgetlist.add(
+  Future<bool> avlblcarpools() async {
+    bool temp = false;
+    List<BookingRecord>? value = await widget.brs;
+    if (value != null) {
+      for (int i = 0; i < value.length; i++) {
+        temp = true;
+        String name = value[i].uid;
+        widget.widgetlist.add(
           ListTile(
             leading: const Icon(
               Icons.person,
@@ -198,8 +215,7 @@ class addbooking extends StatelessWidget {
             ),
             title: Text(
               name,
-              style: const TextStyle(
-                  color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+              style: const TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
             ),
             tileColor: Colors.black,
             shape: RoundedRectangleBorder(
@@ -208,19 +224,33 @@ class addbooking extends StatelessWidget {
           ),
         );
       }
+      if (value.isEmpty) {
+        temp = false;
+        widget.widgetlist.add(
+          const ListTile(
+            title: Center(
+              child: Text(
+                "Sorry, there are no carpools available in your time slot",
+                style: TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+              ),
+            ),
+            tileColor: Colors.black,
+          ),
+        );
+      }
     } else {
-      widgetlist.add(
+      widget.widgetlist.add(
         const ListTile(
           title: Center(
             child: Text(
               "Sorry, there are no carpools available in your time slot",
-              style: TextStyle(
-                  color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
+              style: TextStyle(color: Colors.white, fontFamily: 'Helvetica', fontSize: 15),
             ),
           ),
           tileColor: Colors.black,
         ),
       );
     }
+    return temp;
   }
 }
