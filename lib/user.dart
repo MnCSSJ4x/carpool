@@ -238,7 +238,7 @@ class User {
     if (interval == null) return [];
     List<BookingRecord>? brs = await DataBaseService.getBookingRecordsbyDate(br.date);
     if (brs == null) return null;
-    brs!.remove(br);
+    brs.remove(br);
     List<BookingRecord> ret = [];
 
     for (var bookingRecord in brs) {

@@ -63,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
           setState(() => _body = Stack(children: const <Widget>[
                 TabNavigator(),
               ]));
-          
+
           LoginForm.u = null;
           return;
         }
