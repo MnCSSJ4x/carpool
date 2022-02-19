@@ -77,15 +77,9 @@ The following set of technologies have been used for this project:
 
 ### NOTE: The OTP_auth service is hosted on a test-server which allows only 30 OTP request for a single day. Also all time inputs are considered to be in 24hr format 
 
-# Contributors
+# Creators
 
 - Ishan Jalan - https://www.linkedin.com/in/ishaan-jalan-550a28213/
 - Karanjit Saha - https://www.linkedin.com/in/karanjit-saha-65a02122b/
 - Monjoy Narayan Choudhury - https://www.linkedin.com/in/monjoy-narayan-choudhury-a424b3200/
 - Rudransh Dixit - https://www.linkedin.com/in/rudransh-dixit-a785a61ba/
-
-
-
-# Github Repo link
-
-https://github.com/ishaanj0412/Carpool
