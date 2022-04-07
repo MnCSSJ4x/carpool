@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:carpool/landing.dart';
+import 'package:carpool/start_screen.dart';
 import 'package:carpool/user.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ Future<void> main() async {
         projectId: "sharecab-4e0f6"),
   );
   runApp(const MaterialApp(
-    home: LoginPage(),
+    home: StartScreen(),//LoginPage(),
     debugShowCheckedModeBanner: false,
   ));
   // runApp(const MaterialApp(
