@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:carpool/landing.dart';
 import 'package:carpool/start_screen.dart';
 import 'package:carpool/user.dart';
+import 'package:carpool/where_to_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,8 +21,8 @@ Future<void> main() async {
         messagingSenderId: "1007164354983",
         projectId: "sharecab-4e0f6"),
   );
-  runApp(const MaterialApp(
-    home: StartScreen(),//LoginPage(),
+  runApp( MaterialApp(
+    home: WhereToPage(),//StartScreen(),//LoginPage(),
     debugShowCheckedModeBanner: false,
   ));
   // runApp(const MaterialApp(
@@ -30,57 +31,57 @@ Future<void> main() async {
   // ));
 }
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+// class LoginPage extends StatefulWidget {
+//   const LoginPage({Key? key}) : super(key: key);
 
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
+//   @override
+//   _LoginPageState createState() => _LoginPageState();
+// }
 
-class _LoginPageState extends State<LoginPage> {
-  // ignore: non_constant_identifier_names
-  final form_key = GlobalKey<FormState>();
-  final email_id_controller = TextEditingController();
-  final roll_num_controller = TextEditingController();
-  static const String orgid = "iiitb.ac.in";
+// class _LoginPageState extends State<LoginPage> {
+//   // ignore: non_constant_identifier_names
+//   final form_key = GlobalKey<FormState>();
+//   final email_id_controller = TextEditingController();
+//   final roll_num_controller = TextEditingController();
+//   static const String orgid = "iiitb.ac.in";
 
-  Widget _body = CircularProgressIndicator();
+//   Widget _body = CircularProgressIndicator();
 
-  bool isLoggedIn = false;
-  String name = "";
+//   bool isLoggedIn = false;
+//   String name = "";
 
-  @override
-  void initState() {
-    super.initState();
-    autoLogIn();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     autoLogIn();
+//   }
 
-  void autoLogIn() async {
-    SharedPreferences.getInstance().then((value) {
-      final String? emailID = value.getString("emailID");
-      LoginForm.email = emailID;
-      if (emailID != null) {
-        if (emailID!.isNotEmpty) {
-          setState(() => _body = Stack(children: const <Widget>[
-                TabNavigator(),
-              ]));
+  // void autoLogIn() async {
+  //   SharedPreferences.getInstance().then((value) {
+  //     final String? emailID = value.getString("emailID");
+  //     LoginForm.email = emailID;
+  //     if (emailID != null) {
+  //       if (emailID!.isNotEmpty) {
+  //         setState(() => _body = Stack(children: const <Widget>[
+  //               TabNavigator(),
+  //             ]));
 
-          LoginForm.u = null;
-          return;
-        }
-      }
-      setState(() => _body = Stack(
-            children: <Widget>[
-              //TabNavigator(),
-              LoginForm(form_key: form_key, orgid: orgid, email_id_controller: email_id_controller, roll_num_controller: roll_num_controller),
-            ],
-          ));
-    });
-  }
+  //         LoginForm.u = null;
+  //         return;
+  //       }
+  //     }
+  //     setState(() => _body = Stack(
+  //           children: <Widget>[
+  //             //TabNavigator(),
+  //             LoginForm(form_key: form_key, orgid: orgid, email_id_controller: email_id_controller, roll_num_controller: roll_num_controller),
+  //           ],
+  //         ));
+  //   });
+  // }
 
-  @override
-  Widget build(BuildContext context) {
-    Scaffold? scaffold = null;
+  // @override
+  // Widget build(BuildContext context) {
+  //   Scaffold? scaffold = null;
 
     // if (check) {
     //   return Scaffold(
@@ -93,9 +94,9 @@ class _LoginPageState extends State<LoginPage> {
     //   );
     // }
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: _body,
-    );
-  }
-}
+  //   return Scaffold(
+  //     backgroundColor: Colors.black,
+  //     body: _body,
+  //   );
+  // }
+// }
